@@ -1,0 +1,2 @@
+knife: bundle exec knife cookbook test $COOKBOOK
+foodcritic: bundle exec foodcritic --epic-fail any --tags ~FC009 $SANDBOX/$COOKBOOK
