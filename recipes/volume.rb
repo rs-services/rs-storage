@@ -45,6 +45,7 @@ else
   filesystem nickname do
     fstype node['rs-storage']['device']['filesystem']
     device lazy { node['rightscale_volume'][nickname]['device'] }
+    mkfs_options node['rs-storage']['device']['mkfs_options']
     mount node['rs-storage']['device']['mount_point']
     action [:create, :enable, :mount]
   end

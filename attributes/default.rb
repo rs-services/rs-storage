@@ -41,6 +41,10 @@ default['rs-storage']['device']['iops'] = nil
 # The filesystem to be used on the device
 default['rs-storage']['device']['filesystem'] = 'ext4'
 
+# The additional options/flags to use for the `mkfs` command. If the whole device is formatted, the force (-F) flag
+# can be used (on ext4 filesystem) to force the operation. This flag may vary based on the filesystem type.
+default['rs-storage']['device']['mkfs_options'] = '-F'
+
 # Backup lineage
 default['rs-storage']['backup']['lineage'] = nil
 
