@@ -21,6 +21,18 @@ marker 'recipe_start_rightscale' do
     template 'rightscale_audit_entry.erb'
 end
 
+include_recipe 'chef_handler::default'
+
+cookbook_file "#{node['chef_handler']['handler_path']}/backup_error_handler.rb" do
+  source 'backup_error_handler.rb'
+  action :create
+end
+
+chef_handler 'Rightscale::BackupErrorHandler' do
+  source "#{node['chef_handler']['handler_path']}/backup_error_handler.rb"
+  action :enable
+end
+
 nickname = node['rs-storage']['device']['nickname']
 
 filesystem nickname do
