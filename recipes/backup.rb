@@ -16,3 +16,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+marker 'recipe_start_rightscale' do
+    template 'rightscale_audit_entry.erb'
+end
+
+nickname = node['rs-storage']['device']['nickname']
+
+filesystem nickname do
+  mount node['rs-storage']['device']['mount_point']
+  action :freeze
+end
+
+rightscale_backup nickname do
+  lineage node['rs-storage']['backup']['lineage']
+  action :create
+end
+
+filesystem nickname do
+  mount node['rs-storage']['device']['mount_point']
+  action :unfreeze
+end

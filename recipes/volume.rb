@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+marker "recipe_start_rightscale" do
+  template "rightscale_audit_entry.erb"
+end
+
 nickname = node['rs-storage']['device']['nickname']
 
 if node['rs-storage']['device']['restore']
