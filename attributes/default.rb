@@ -23,6 +23,10 @@ default['rs-storage']['device']['restore'] = false
 # Enable/Disable scheduling backups
 default['rs-storage']['schedule']['enable'] = false
 
+default['rs-storage']['schedule']['hour'] = nil
+
+default['rs-storage']['schedule']['minute'] = nil
+
 # The mount point where the device will be mounted
 default['rs-storage']['device']['mount_point'] = '/mnt/storage'
 

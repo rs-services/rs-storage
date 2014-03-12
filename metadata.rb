@@ -6,11 +6,11 @@ description      'Installs/Configures rs-storage'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.1.0'
 
-depends 'marker'
 depends 'chef_handler'
-depends 'rightscale_volume'
-depends 'rightscale_backup'
 depends 'filesystem'
+depends 'marker'
+depends 'rightscale_backup'
+depends 'rightscale_volume'
 
 recipe 'rs-storage::default', 'Sets up required dependencies for using this cookbook'
 recipe 'rs-storage::volume', 'Creates a volume and attaches it to the server'
@@ -117,3 +117,24 @@ attribute 'rs-storage/backup/keep/max_snapshots',
   :default => '60',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
+
+attribute 'rs-storage/backup/schedule/enable',
+  :display_name => 'Backup Schedule Enable',
+  :description => 'Enable or disable periodic backup schedule',
+  :default => 'false',
+  :choice => ['true', 'false'],
+  :recipes => ['rs-storage::schedule'],
+  :required => 'optional'
+
+attribute 'rs-storage/backup/schedule/hour',
+  :display_name => 'Backup Schedule Hour',
+  :description => "The hour to schedule the backup on. Use '*' for taking backups every hour. This value should be' +
+    ' between 0 and 23. Example: 23",
+  :recipes => ['rs-storage::schedule'],
+  :required => 'required'
+
+attribute 'rs-storage/backup/schedule/minute',
+  :display_name => 'Backup Schedule Minute',
+  :description => 'The minute to schedule the backup on. This value should be between 0 and 59. Example: 30',
+  :recipes => ['rs-storage::schedule'],
+  :required => 'required'
