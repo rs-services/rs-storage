@@ -23,7 +23,21 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
-if node['rs-storage']['device']['restore']
+if node['rs-storage']['device']['restore'] == true || node['rs-storage']['device']['restore'] == 'true'
+  lineage = node['rs-storage']['backup']['lineage']
+  lineage_override = node['rs-storage']['backup']['lineage_override']
+  timestamp_override = node['rs-storage']['backup']['timestamp_override']
+
+  message = "Restoring volume '#{nickname}' from backup"
+  if node['rs-storage']['backup']['lineage_override']
+    message << " by overriding lineage to '#{lineage_override}'"
+  else
+    message << " using lineage '#{lineage}'"
+  end
+  message << " and overriding timestamp to '#{timestamp}'"
+
+  log message
+
   rightscale_backup nickname do
     if node['rs-storage']['backup']['lineage_override']
       lineage node['rs-strage']['backup']['lineage_override']
@@ -31,7 +45,7 @@ if node['rs-storage']['device']['restore']
       lineage node['rs-storage']['backup']['lineage']
     end
     timestamp node['rs-storage']['backup']['timestamp_override'] if node['rs-storage']['backup']['timestamp_override']
-    size node['rs-storage']['device']['volume_size']
+    size node['rs-storage']['device']['volume_size'].to_i
     action :restore
   end
 
@@ -41,8 +55,10 @@ if node['rs-storage']['device']['restore']
     action [:mount, :enable]
   end
 else
+
+  log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['size']}"
   rightscale_volume nickname do
-    size node['rs-storage']['device']['volume_size']
+    size node['rs-storage']['device']['volume_size'].to_i
     action [:create, :attach]
   end
 

@@ -35,15 +35,21 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
+log "Freezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
+
 filesystem nickname do
   mount node['rs-storage']['device']['mount_point']
   action :freeze
 end
 
+log "Taking a backup of lineage '#{node['rs-storage']['backup']['lineage']}'"
+
 rightscale_backup nickname do
   lineage node['rs-storage']['backup']['lineage']
   action :create
 end
+
+log "Unfreezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
 
 filesystem nickname do
   mount node['rs-storage']['device']['mount_point']

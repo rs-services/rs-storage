@@ -24,7 +24,7 @@ end
 nickname = node['rs-storage']['device']['nickname']
 
 # Single device
-if node['rs-storage']['device']['stripe_count'] == 1
+if node['rs-storage']['device']['stripe_count'].to_i == 1
   rightscale_volume nickname do
     action [:detach, :delete]
   end
