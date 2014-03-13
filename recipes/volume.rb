@@ -34,7 +34,7 @@ if node['rs-storage']['device']['restore'] == true || node['rs-storage']['device
   else
     message << " using lineage '#{lineage}'"
   end
-  message << " and overriding timestamp to '#{timestamp}'"
+  message << " and overriding timestamp to '#{timestamp_override}'" if timestamp_override
 
   log message
 
@@ -56,7 +56,7 @@ if node['rs-storage']['device']['restore'] == true || node['rs-storage']['device
   end
 else
 
-  log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['size']}"
+  log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['volume_size']}"
   rightscale_volume nickname do
     size node['rs-storage']['device']['volume_size'].to_i
     action [:create, :attach]
