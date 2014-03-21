@@ -20,67 +20,73 @@ recipe 'rs-storage::decommission', 'Destroys LVM conditionally, detaches and des
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
 recipe 'rs-storage::schedule', 'Enable/disable periodic backups based on rs-storage/schedule/enable'
 
-attribute 'rs-storage/device/restore',
-  :display_name => 'Restore Device from a Backup',
-  :description => 'If this option is set to true, rs-storage::volume and rs-storage::stripe recipes will restore' +
-    ' device(s) from the backup instead of creating new device(s).',
-  :default => 'false',
-  :choice => ['true', 'false'],
-  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+attribute 'rs-storage/device/stripe_count',
+  :display_name => 'Device Stripe Count',
+  :description => 'The number of device stripes to create. If this value is set to more than 1, it will create the' +
+    ' specified number of devices and create an LVM on the devices.',
+  :default => '1',
+  :recipes => ['rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/device/mount_point',
   :display_name => 'Device Mount Point',
   :description => 'The mount point to mount the device on. Example: /mnt/storage',
   :default => '/mnt/storage',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/device/nickname',
   :display_name => 'Device Nickname',
   :description => 'Nickname for the device. Example: data_storage',
   :default => 'data_storage',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/device/volume_size',
   :display_name => 'Device Volume Size',
   :description => 'Size of the volume to create. Example: 10',
   :default => '10',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/device/iops',
   :display_name => 'Device IOPS',
   :description => 'IO Operations Per Second to use for the device. Currently this value is only used on AWS clouds.' +
     ' Example: 100',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/device/filesystem',
   :display_name => 'Device Filesystem',
   :description => 'The filesystem to be used on the device. Example: ext4',
   :default => 'ext4',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :required => 'optional'
+
+attribute 'rs-storage/device/destroy_on_decomission',
+  :display_name => 'Destroy on Decomission',
+  :description => 'If set to true, the devices will be destroyed on decomission',
+  :default => 'false',
+  :recipes => ['rs-storage::decommission'],
   :required => 'optional'
 
 attribute 'rs-storage/backup/lineage',
   :display_name => 'Backup Lineage',
   :description => 'The backup lineage. Example: production',
-  :recipes => ['rs-storage::volume'],
+  :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/lineage_override',
+attribute 'rs-storage/restore/lineage',
   :display_name => 'Backup Lineage Override',
-  :description => 'The lineage name to override to restore backups from a different lineage. Example: staging',
-  :recipes => ['rs-storage::volume'],
+  :description => 'The lineage name to restore backups. Example: staging',
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/timestamp_override',
+attribute 'rs-storage/restore/timestamp',
   :display_name => 'Backup Timestamp Override',
-  :description => 'The timestamp to override to restore from a backup taken on or before the timestamp in the same' +
-    ' lineage. Example: 1391473172',
-  :recipes => ['rs-storage::volume'],
+  :description => 'The timestamp to restore from a backup taken on or before the timestamp in the same lineage.' +
+    ' Example: 1391473172',
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
 attribute 'rs-storage/backup/keep/daily',
@@ -118,7 +124,7 @@ attribute 'rs-storage/backup/keep/max_snapshots',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/schedule/enable',
+attribute 'rs-storage/schedule/enable',
   :display_name => 'Backup Schedule Enable',
   :description => 'Enable or disable periodic backup schedule',
   :default => 'false',
@@ -126,15 +132,15 @@ attribute 'rs-storage/backup/schedule/enable',
   :recipes => ['rs-storage::schedule'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/schedule/hour',
+attribute 'rs-storage/schedule/hour',
   :display_name => 'Backup Schedule Hour',
   :description => "The hour to schedule the backup on. Use '*' for taking backups every hour. This value should be' +
     ' between 0 and 23. Example: 23",
   :recipes => ['rs-storage::schedule'],
-  :required => 'required'
+  :required => 'optional'
 
-attribute 'rs-storage/backup/schedule/minute',
+attribute 'rs-storage/schedule/minute',
   :display_name => 'Backup Schedule Minute',
   :description => 'The minute to schedule the backup on. This value should be between 0 and 59. Example: 30',
   :recipes => ['rs-storage::schedule'],
-  :required => 'required'
+  :required => 'optional'

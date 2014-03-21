@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-# Restores from a backup lineage (specified by rs-storage/backup/lineage) instead of creating a new volume
-default['rs-storage']['device']['restore'] = false
-
 # Enable/Disable scheduling backups
 default['rs-storage']['schedule']['enable'] = false
 
@@ -52,11 +49,11 @@ default['rs-storage']['device']['mkfs_options'] = '-F'
 # Backup lineage
 default['rs-storage']['backup']['lineage'] = nil
 
-# Override lineage name to restore backups from a different lineage
-default['rs-srorage']['backup']['lineage_override'] = nil
+# Restore lineage
+default['rs-srorage']['restore']['lineage'] = nil
 
-# Override timestamp to restore backup from a backup taken on or before the timestamp in the same lineage
-default['rs-srorage']['backup']['timestamp_override'] = nil
+# The timestamp to restore backup from a backup taken on or before the timestamp in the same lineage
+default['rs-srorage']['restore']['timestamp'] = nil
 
 # Daily backups to keep
 default['rs-srorage']['backup']['keep']['daily'] = 14

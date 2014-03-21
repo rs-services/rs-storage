@@ -23,39 +23,7 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
-if node['rs-storage']['device']['restore'] == true || node['rs-storage']['device']['restore'] == 'true'
-  lineage = node['rs-storage']['backup']['lineage']
-  lineage_override = node['rs-storage']['backup']['lineage_override']
-  timestamp_override = node['rs-storage']['backup']['timestamp_override']
-
-  message = "Restoring volume '#{nickname}' from backup"
-  if node['rs-storage']['backup']['lineage_override']
-    message << " by overriding lineage to '#{lineage_override}'"
-  else
-    message << " using lineage '#{lineage}'"
-  end
-  message << " and overriding timestamp to '#{timestamp_override}'" if timestamp_override
-
-  log message
-
-  rightscale_backup nickname do
-    if node['rs-storage']['backup']['lineage_override']
-      lineage node['rs-strage']['backup']['lineage_override']
-    else
-      lineage node['rs-storage']['backup']['lineage']
-    end
-    timestamp node['rs-storage']['backup']['timestamp_override'] if node['rs-storage']['backup']['timestamp_override']
-    size node['rs-storage']['device']['volume_size'].to_i
-    action :restore
-  end
-
-  mount node['rs-storage']['device']['mount_point'] do
-    fstype node['rs-storage']['device']['filesystem']
-    device lazy { node['rightscale_volume'][nickname]['device'] }
-    action [:mount, :enable]
-  end
-else
-
+if node['rs-storage']['restore']['lineage'].to_s.empty?
   log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['volume_size']}"
   rightscale_volume nickname do
     size node['rs-storage']['device']['volume_size'].to_i
@@ -68,5 +36,26 @@ else
     mkfs_options node['rs-storage']['device']['mkfs_options']
     mount node['rs-storage']['device']['mount_point']
     action [:create, :enable, :mount]
+  end
+else
+  lineage = node['rs-storage']['restore']['lineage']
+  timestamp = node['rs-storage']['restore']['timestamp']
+
+  message = "Restoring volume '#{nickname}' from backup using lineage '#{lineage}'"
+  message << " and using timestamp '#{timestamp}'" if timestamp
+
+  log message
+
+  rightscale_backup nickname do
+    lineage node['rs-strage']['restore']['lineage']
+    timestamp node['rs-storage']['restore']['timestamp'] if node['rs-storage']['restore']['timestamp']
+    size node['rs-storage']['device']['volume_size'].to_i
+    action :restore
+  end
+
+  mount node['rs-storage']['device']['mount_point'] do
+    fstype node['rs-storage']['device']['filesystem']
+    device lazy { node['rightscale_backup'][nickname]['devices'].first }
+    action [:mount, :enable]
   end
 end
