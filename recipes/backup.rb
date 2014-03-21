@@ -55,3 +55,15 @@ filesystem nickname do
   mount node['rs-storage']['device']['mount_point']
   action :unfreeze
 end
+
+log 'Cleaning up old snapshots'
+
+rightscale_backup nickname do
+  lineage node['rs-storage']['device']['lineage']
+  keep_last node['rs-storage']['backup']['keep']['keep_latest']
+  dailies node['rs-storage']['backup']['keep']['dailies']
+  monthlies node['rs-storage']['backup']['keep']['monthlies']
+  weeklies node['rs-storage']['backup']['keep']['weeklies']
+  yearlies node['rs-storage']['backup']['keep']['yearlies']
+  action :cleanup
+end

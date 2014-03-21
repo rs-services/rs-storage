@@ -19,39 +19,45 @@
 
 stripe_count = node['rs-storage']['device']['stripe_count'].to_i
 nickname = node['rs-storage']['device']['nickname']
-size = node['rs-storage']['device']['size']
+size = node['rs-storage']['device']['volume_size']
 
-raise 'rs-storage/device/stripe_count should be 1 or more.' if stripe_count < 1
+raise 'rs-storage/device/stripe_count should be at least 1' if stripe_count < 1
 
 stripe_device_size = (size.to_f / stripe_count.to_f).ceil
+
+Chef::Log.info "Total size is: #{size}"
+Chef::Log.info "Stripe count is set to: #{stripe_count}"
+Chef::Log.info "Each device in the stripe will created of size: #{stripe_device_size}"
+
 device_nicknames = []
 
+# rs-storage/restore/lineage is empty, creating new volume(s) and setting up LVM
 if node['rs-storage']['restore']['lineage'].to_s.empty?
   stripe_count.times do |stripe_num|
-    device_nicknames << "#{nickname}_#{stripe_num}"
-    rightscale_volume "#{nickname}_#{stripe_num}" do
+    device_nicknames << "#{nickname}_#{stripe_num + 1}"
+    rightscale_volume "#{nickname}_#{stripe_num + 1}" do
       size stripe_device_size
       action [:create, :attach]
     end
   end
 
-  # TODO: sanitize the nickname before using them for naming volume groups and logical volumes
+  # Remove any characters other than alphanumeric and dashes and replace with dashes
+  sanitized_nickname = nickname.downcase.downcase.gsub(/[^-a-z0-9]/, '-')
 
-  lvm_volume_group "#{nickname}-vg" do
-    physical_volumes lazy do
-      device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] }
-    end
+  lvm_volume_group "#{sanitized_nickname}-vg" do
+    physical_volumes lazy { device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] } }
 
-    logical_volume "#{nickname}-lv" do
+    logical_volume "#{sanitized_nickname}-lv" do
       size '100%VG'
       filesystem node['rs-storage']['device']['filesystem']
       mount_point node['rs-storage']['device']['mount_point']
       if stripe_count > 1
         stripes stripe_count
-        stripe_size 512
+        stripe_size node['rs-storage']['device']['stripe_size']
       end
     end
   end
+# rs-storage/restore/lineage is set, restore from the backup
 else
   #TODO: Restore
 end

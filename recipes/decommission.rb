@@ -23,12 +23,17 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
-# Single device
-if node['rs-storage']['device']['stripe_count'].to_i == 1
+lvm_used = nil # TODO: Detect by inspecting the system
+
+if lvm_used
+  # TODO: Destroy LVM conditionally
+  node['rs-storage']['device']['stripe_count'].to_i.times do |stripe_num|
+    rightscale_volume "#{nickname}_#{stripe_num}" do
+      action [:detach, :delete]
+    end
+  end
+else
   rightscale_volume nickname do
     action [:detach, :delete]
   end
-# Multiple device stripes
-else
-  # TODO: Remove LVM conditionally using the lvm cookbook and detach and destroy all volumes
 end

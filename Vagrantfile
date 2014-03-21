@@ -78,13 +78,19 @@ Vagrant.configure("2") do |config|
       },
       :'rs-storage' => {
         :backup => {
-          :lineage => 'testing'
+          :lineage => 'testing',
+          :schedule => {
+            :enable => false,
+            :hour => 23,
+            :minute => 0
+          }
         }
       }
     }
 
     chef.run_list = [
-        "recipe[rs-storage::default]"
+      "recipe[rs-storage::default]",
+      "recipe[rs-storage::schedule]"
     ]
   end
 end

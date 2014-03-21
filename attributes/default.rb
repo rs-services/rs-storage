@@ -46,26 +46,29 @@ default['rs-storage']['device']['filesystem'] = 'ext4'
 # can be used (on ext4 filesystem) to force the operation. This flag may vary based on the filesystem type.
 default['rs-storage']['device']['mkfs_options'] = '-F'
 
+# The stripe size to use while creating LVM
+default['rs-storage']['device']['stripe_size'] = 512
+
 # Backup lineage
 default['rs-storage']['backup']['lineage'] = nil
 
 # Restore lineage
-default['rs-srorage']['restore']['lineage'] = nil
+default['rs-storage']['restore']['lineage'] = nil
 
 # The timestamp to restore backup from a backup taken on or before the timestamp in the same lineage
-default['rs-srorage']['restore']['timestamp'] = nil
+default['rs-storage']['restore']['timestamp'] = nil
 
 # Daily backups to keep
-default['rs-srorage']['backup']['keep']['daily'] = 14
+default['rs-storage']['backup']['keep']['dailies'] = 14
 
 # Weekly backups to keep
-default['rs-srorage']['backup']['keep']['weekly'] = 6
+default['rs-storage']['backup']['keep']['weeklies'] = 6
 
 # Monthly backups to keep
-default['rs-srorage']['backup']['keep']['monthly'] = 12
+default['rs-storage']['backup']['keep']['monthlies'] = 12
 
 # Yearly backups to keep
-default['rs-srorage']['backup']['keep']['yearly'] = 2
+default['rs-storage']['backup']['keep']['yearlies'] = 2
 
 # Maximum snapshots to keep
-default['rs-srorage']['backup']['keep']['max_snapshots'] = 60
+default['rs-storage']['backup']['keep']['keep_last'] = 60
