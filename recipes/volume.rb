@@ -47,7 +47,7 @@ else
   log message
 
   rightscale_backup nickname do
-    lineage node['rs-strage']['restore']['lineage']
+    lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'] if node['rs-storage']['restore']['timestamp']
     size node['rs-storage']['device']['volume_size'].to_i
     action :restore

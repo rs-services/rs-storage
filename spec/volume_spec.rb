@@ -17,12 +17,12 @@ describe 'rs-storage::volume' do
     end
   end
 
-  context 'rs-storage/device/restore is true' do
+  context 'rs-storage/restore/lineage is set' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
-        node.set['rs-storage']['device']['restore'] = true
-        node.set['rs-storage']['backup']['lineage'] = 'mydb'
+        node.set['rs-storage']['restore']['lineage'] = 'testing'
         node.set['rightscale_volume']['data_storage']['device'] = '/dev/sda'
+        node.set['rightscale_backup']['data_storage']['devices'] = ['/dev/sda']
       end.converge(described_recipe)
     end
     let(:nickname) { chef_run.node['rs-storage']['device']['nickname'] }
