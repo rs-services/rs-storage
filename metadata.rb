@@ -8,6 +8,7 @@ version          '0.1.0'
 
 depends 'chef_handler'
 depends 'filesystem'
+ depends 'lvm'
 depends 'marker'
 depends 'rightscale_backup'
 depends 'rightscale_volume'
@@ -25,21 +26,21 @@ attribute 'rs-storage/device/stripe_count',
   :description => 'The number of device stripes to create. If this value is set to more than 1, it will create the' +
     ' specified number of devices and create an LVM on the devices.',
   :default => '1',
-  :recipes => ['rs-storage::stripe'],
+  :recipes => ['rs-storage::stripe', 'rs-storage::decommission'],
   :required => 'optional'
 
 attribute 'rs-storage/device/mount_point',
   :display_name => 'Device Mount Point',
   :description => 'The mount point to mount the device on. Example: /mnt/storage',
   :default => '/mnt/storage',
-  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe', 'rs-storage::decommission'],
   :required => 'optional'
 
 attribute 'rs-storage/device/nickname',
   :display_name => 'Device Nickname',
   :description => 'Nickname for the device. Example: data_storage',
   :default => 'data_storage',
-  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe', 'rs-storage::decommission'],
   :required => 'optional'
 
 attribute 'rs-storage/device/volume_size',
@@ -63,9 +64,9 @@ attribute 'rs-storage/device/filesystem',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
-attribute 'rs-storage/device/destroy_on_decomission',
-  :display_name => 'Destroy on Decomission',
-  :description => 'If set to true, the devices will be destroyed on decomission',
+attribute 'rs-storage/device/destroy_on_decommission',
+  :display_name => 'Destroy on Decommission',
+  :description => 'If set to true, the devices will be destroyed on decommission',
   :default => 'false',
   :recipes => ['rs-storage::decommission'],
   :required => 'optional'

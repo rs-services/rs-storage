@@ -1,4 +1,5 @@
 #
+#
 # Cookbook Name:: rs-storage
 # Recipe:: stripe
 #
@@ -31,6 +32,7 @@ Chef::Log.info "Each device in the stripe will created of size: #{stripe_device_
 
 device_nicknames = []
 
+include_recipe 'lvm::default'
 
 # rs-storage/restore/lineage is empty, creating new volume(s) and setting up LVM
 if node['rs-storage']['restore']['lineage'].to_s.empty?
@@ -52,7 +54,7 @@ else
 end
 
 # Remove any characters other than alphanumeric and dashes and replace with dashes
-sanitized_nickname = nickname.downcase.downcase.gsub(/[^-a-z0-9]/, '-')
+sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
 lvm_volume_group "#{sanitized_nickname}-vg" do
   physical_volumes lazy { device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] } }

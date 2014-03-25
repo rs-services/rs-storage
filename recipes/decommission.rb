@@ -21,23 +21,44 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
-nickname = node['rs-storage']['device']['nickname']
+if node['rs-storage']['device']['destroy_on_decomission'] == true ||
+  node['rs-storage']['device']['destroy_on_decomission'] == 'true'
+  nickname = node['rs-storage']['device']['nickname']
 
-#lvm_used = nil # TODO: Detect by inspecting the system
+  # Remove any characters other than alphanumeric and dashes and replace with dashes
+  sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
-#if is_lvm_used?(node['rs-storage']['device']['mount_point'])
-# TODO: Destroy LVM conditionally
-# 1. Unmount the logical volume
-# 2. Remove the logical volume
-# 3. Remove the volume group
-# 4. Remove the phyisical volume(s)
-  1.upto(node['rs-storage']['device']['stripe_count'].to_i) do |stripe_num|
-    rightscale_volume "#{nickname}_#{stripe_num}" do
+  # Construct the logical volume from the name of the volume group and the name of the logical volume similat to how the
+  # lvm cookbook constructs the name during the creation of the logical volume
+  logical_volume_device = "/dev/mapper/#{to_dm_name("#{sanitized_nickname}-vg")}-#{to_dm_name("#{sanitized_nickname}-lv")}"
+
+  log "Unmounting #{node['rs-storage']['device']['mount_point']}"
+  mount node['rs-storage']['device']['mount_point'] do
+    device logical_volume_device
+    action [:umount, :disable]
+  end
+
+  if is_lvm_used?(node['rs-storage']['device']['mount_point'])
+    log "LVM is used on the device(s). Cleaning up the LVM."
+    # Clean up the LVM conditionally
+    ruby_block 'clean up LVM' do
+      block do
+        remove_lvm("#{sanitized_nickname}-vg")
+      end
+    end
+
+    1.upto(node['rs-storage']['device']['stripe_count'].to_i) do |stripe_num|
+      rightscale_volume "#{nickname}_#{stripe_num}" do
+        action [:detach, :delete]
+      end
+    end
+  else
+    log 'LVM was not used on the device, simply detaching the deleting the device.'
+    rightscale_volume nickname do
       action [:detach, :delete]
     end
   end
-#else
-#  rightscale_volume nickname do
-#    action [:detach, :delete]
-#  end
-#end
+else
+  log "rs-storage/device/destroy_on_decomission is set to '#{node['rs-storage']['device']['destroy_on_decomission']}'" +
+    "  skipping..."
+end
