@@ -23,17 +23,21 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
-lvm_used = nil # TODO: Detect by inspecting the system
+#lvm_used = nil # TODO: Detect by inspecting the system
 
-if lvm_used
-  # TODO: Destroy LVM conditionally
-  node['rs-storage']['device']['stripe_count'].to_i.times do |stripe_num|
+#if is_lvm_used?(node['rs-storage']['device']['mount_point'])
+# TODO: Destroy LVM conditionally
+# 1. Unmount the logical volume
+# 2. Remove the logical volume
+# 3. Remove the volume group
+# 4. Remove the phyisical volume(s)
+  1.upto(node['rs-storage']['device']['stripe_count'].to_i) do |stripe_num|
     rightscale_volume "#{nickname}_#{stripe_num}" do
       action [:detach, :delete]
     end
   end
-else
-  rightscale_volume nickname do
-    action [:detach, :delete]
-  end
-end
+#else
+#  rightscale_volume nickname do
+#    action [:detach, :delete]
+#  end
+#end
