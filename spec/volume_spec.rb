@@ -1,4 +1,4 @@
-require_relative 'spec_helper.rb'
+require_relative 'spec_helper'
 
 describe 'rs-storage::volume' do
   context 'rs-storage/restore/lineage is not set' do
