@@ -1,7 +1,7 @@
 require_relative 'spec_helper.rb'
 
 describe 'rs-storage::volume' do
-  context 'rs-storage/device/restore is false' do
+  context 'rs-storage/restore/lineage is not set' do
     let(:chef_run) { ChefSpec::Runner.new.converge(described_recipe) }
     let(:nickname) { chef_run.node['rs-storage']['device']['nickname'] }
 

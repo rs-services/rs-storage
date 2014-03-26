@@ -66,5 +66,5 @@ if node['rs-storage']['device']['destroy_on_decommission'] == true ||
   end
 else
   log "rs-storage/device/destroy_on_decommission is set to '#{node['rs-storage']['device']['destroy_on_decommission']}'" +
-    "  skipping..."
+    " skipping..."
 end

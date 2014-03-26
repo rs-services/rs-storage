@@ -1,22 +1,85 @@
-require_relative 'spec_helper.rb'
+require_relative 'spec_helper'
 
 describe 'rs-storage::decommission' do
-  context 'rs-storage/device/stripe_count is set to 1' do
+  context 'rs-storage/device/destroy_on_decommission is set to false' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
-        node.set['rs-storage']['device']['stripe_count'] = 1
-      end.converge(described_recipe)
-    end
-    let(:nickname) { chef_run.node['rs-storage']['device']['nickname'] }
-
-    it 'detaches the volume from the instance' do
-      expect(chef_run).to detach_rightscale_volume(nickname)
+      ChefSpec::Runner.new.converge(described_recipe)
     end
 
-    it 'deletes the volume from the cloud' do
-      expect(chef_run).to delete_rightscale_volume(nickname)
+    it 'logs that it is skipping destruction' do
+      expect(chef_run).to write_log("rs-storage/device/destroy_on_decommission is set to 'false' skipping...")
     end
   end
 
-  # TODO: Add tests for multiple stripes case
+  context 'rs-storage/device/destroy_on_decommission is set to true' do
+    let(:chef_runner) do
+      ChefSpec::Runner.new do |node|
+        node.set['rs-storage']['device']['destroy_on_decommission'] = true
+      end
+    end
+    let(:nickname) { chef_run.node['rs-storage']['device']['nickname'] }
+
+    context 'LVM is not used' do
+      before do
+        mount = double
+        Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
+        allow(mount).to receive(:run_command)
+        allow(mount).to receive(:error!)
+        allow(mount).to receive(:stdout).and_return('/dev/sda1 on /mnt/storage type ext4 (auto)')
+      end
+
+      let(:chef_run) do
+        chef_runner.converge(described_recipe)
+      end
+
+      it 'unmounts and disables the volume on the instance' do
+        expect(chef_run).to umount_mount('/mnt/storage')
+        expect(chef_run).to disable_mount('/mnt/storage')
+      end
+
+      it 'detaches the volume from the instance' do
+        expect(chef_run).to detach_rightscale_volume(nickname)
+      end
+
+      it 'deletes the volume from the cloud' do
+        expect(chef_run).to delete_rightscale_volume(nickname)
+      end
+    end
+
+    context 'LVM is used' do
+      before do
+        mount = double
+        Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
+        allow(mount).to receive(:run_command)
+        allow(mount).to receive(:error!)
+        allow(mount).to receive(:stdout).and_return('/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)')
+      end
+
+      let(:chef_run) do
+        chef_runner.node.set['rs-storage']['device']['stripe_count'] = 2
+        chef_runner.converge(described_recipe) do
+          RsStorage::Helper.stub(:is_lvm_used?) { true }
+        end
+      end
+
+      it 'unmounts and disables the volume on the instance' do
+        expect(chef_run).to umount_mount('/mnt/storage')
+        expect(chef_run).to disable_mount('/mnt/storage')
+      end
+
+      it 'cleans up the LVM' do
+        expect(chef_run).to run_ruby_block('clean up LVM')
+      end
+
+      it 'detaches the volumes from the instance' do
+        expect(chef_run).to detach_rightscale_volume("#{nickname}_1")
+        expect(chef_run).to detach_rightscale_volume("#{nickname}_2")
+      end
+
+      it 'deletes the volumes from the cloud' do
+        expect(chef_run).to delete_rightscale_volume("#{nickname}_1")
+        expect(chef_run).to delete_rightscale_volume("#{nickname}_2")
+      end
+    end
+  end
 end
