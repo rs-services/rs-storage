@@ -23,10 +23,15 @@ end
 
 nickname = node['rs-storage']['device']['nickname']
 
+# Cloud-specific volume options
+volume_options = {}
+volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
+
 if node['rs-storage']['restore']['lineage'].to_s.empty?
   log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['volume_size']}"
   rightscale_volume nickname do
     size node['rs-storage']['device']['volume_size'].to_i
+    options volume_options
     action [:create, :attach]
   end
 
@@ -50,6 +55,7 @@ else
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'] if node['rs-storage']['restore']['timestamp']
     size node['rs-storage']['device']['volume_size'].to_i
+    options volume_options
     action :restore
   end
 

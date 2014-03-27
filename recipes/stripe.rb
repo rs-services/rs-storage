@@ -32,6 +32,10 @@ Chef::Log.info "Each device in the stripe will created of size: #{stripe_device_
 
 device_nicknames = []
 
+# Cloud-specific volume options
+volume_options = {}
+volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
+
 include_recipe 'lvm::default'
 
 # rs-storage/restore/lineage is empty, creating new volume(s) and setting up LVM
@@ -40,6 +44,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
     device_nicknames << "#{nickname}_#{stripe_num}"
     rightscale_volume "#{nickname}_#{stripe_num}" do
       size stripe_device_size
+      options volume_options
       action [:create, :attach]
     end
   end
@@ -49,6 +54,7 @@ else
     size stripe_device_size
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'] if node['rs-storage']['restore']['timestamp']
+    options volume_options
     action :restore
   end
 end
@@ -56,6 +62,8 @@ end
 # Remove any characters other than alphanumeric and dashes and replace with dashes
 sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
+# Setup LVM on the volumes. This resource will setup the physical volumes, create a volume group and a logical volume
+# as well as formats the volume and mounts in the specifiec mount point.
 lvm_volume_group "#{sanitized_nickname}-vg" do
   physical_volumes lazy { device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] } }
 

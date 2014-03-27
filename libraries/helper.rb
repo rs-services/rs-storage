@@ -134,6 +134,27 @@ module RsStorage
     def to_dm_name(name)
       RsStorage::Helper.to_dm_name(name)
     end
+
+    # Obtains the run state of the server. It uses the `rs_state` utility to get the current system run state.
+    # Possible values for this command: booting, booting:reboot, operational, stranded,
+    #                                   shutting-down:reboot, shutting-down:terminate, shutting-down:stop
+    #
+    # @return [String] the current system run state
+    #
+    def self.get_rs_run_state
+      state = shell_out!('rs_state --type=run')
+      state.stdout.chomp
+    end
+
+    # Obtains the run state of the server. It uses the `rs_state` utility to get the current system run state.
+    # Possible values for this command: booting, booting:reboot, operational, stranded,
+    #                                   shutting-down:reboot, shutting-down:terminate, shutting-down:stop
+    #
+    # @return [String] the current system run state
+    #
+    def get_rs_run_state
+      RsStorage::Helper.get_rs_run_state
+    end
   end
 end
 
