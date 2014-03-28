@@ -53,7 +53,7 @@ else
   rightscale_backup nickname do
     size stripe_device_size
     lineage node['rs-storage']['restore']['lineage']
-    timestamp node['rs-storage']['restore']['timestamp'] if node['rs-storage']['restore']['timestamp']
+    timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
     options volume_options
     action :restore
   end
