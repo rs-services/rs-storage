@@ -17,17 +17,17 @@
 # limitations under the License.
 #
 
-schedule_enable = node['rs-storage']['backup']['schedule']['enable'] == true || node['rs-storage']['backup']['schedule']['enable'] == 'true'
-schedule_hour = node['rs-storage']['backup']['schedule']['hour']
-schedule_minute = node['rs-storage']['backup']['schedule']['minute']
+schedule_enable = node['rs-storage']['schedule']['enable'] == true || node['rs-storage']['schedule']['enable'] == 'true'
+schedule_hour = node['rs-storage']['schedule']['hour']
+schedule_minute = node['rs-storage']['schedule']['minute']
 lineage = node['rs-storage']['backup']['lineage']
 
 # Both schedule hour and minute should be set
 unless schedule_hour && schedule_minute
-  raise 'rs-storage/backup/schedule/hour and rs-storage/backup/schedule/minute inputs should be set'
+  raise 'rs-storage/schedule/hour and rs-storage/schedule/minute inputs should be set'
 end
 
-# Adds or removes the crontab entry for backup schedule based on rs-storage/backup/schedule/enable
+# Adds or removes the crontab entry for backup schedule based on rs-storage/schedule/enable
 cron "backup_schedule_#{lineage}" do
   minute schedule_minute
   hour schedule_hour
