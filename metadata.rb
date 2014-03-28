@@ -84,7 +84,7 @@ attribute 'rs-storage/restore/lineage',
   :required => 'optional'
 
 attribute 'rs-storage/restore/timestamp',
-  :display_name => 'Backup Timestamp Override',
+  :display_name => 'Restore Timestamp',
   :description => 'The timestamp to restore from a backup taken on or before the timestamp in the same lineage.' +
     ' Example: 1391473172',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
