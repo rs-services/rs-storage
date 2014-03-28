@@ -1,4 +1,4 @@
-require_relative 'spec_helper.rb'
+require_relative 'spec_helper'
 
 describe 'rs-storage::default' do
   let(:chef_run) { ChefSpec::Runner.new(log_level: :error).converge(described_recipe) }

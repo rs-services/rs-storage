@@ -51,9 +51,9 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
 # rs-storage/restore/lineage is set, restore from the backup
 else
   rightscale_backup nickname do
-    size stripe_device_size
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
+    size stripe_device_size
     options volume_options
     action :restore
   end
@@ -65,16 +65,22 @@ sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 # Setup LVM on the volumes. This resource will setup the physical volumes, create a volume group and a logical volume
 # as well as formats the volume and mounts in the specifiec mount point.
 lvm_volume_group "#{sanitized_nickname}-vg" do
-  physical_volumes lazy { device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] } }
-
-  logical_volume "#{sanitized_nickname}-lv" do
-    size '100%VG'
-    filesystem node['rs-storage']['device']['filesystem']
-    mount_point node['rs-storage']['device']['mount_point']
-    if stripe_count > 1
-      stripes stripe_count
-      stripe_size node['rs-storage']['device']['stripe_size']
+  physical_volumes(lazy do
+    if node['rs-storage']['restore']['lineage'].to_s.empty?
+      device_nicknames.map { |nickname| node['rightscale_volume'][nickname]['device'] }
+    else
+      node['rightscale_backup'][nickname]['devices']
     end
-  end
+  end)
 end
 
+lvm_logical_volume "#{sanitized_nickname}-lv" do
+  group "#{sanitized_nickname}-vg"
+  size '100%VG'
+  filesystem node['rs-storage']['device']['filesystem']
+  mount_point node['rs-storage']['device']['mount_point']
+  if stripe_count > 1
+    stripes stripe_count
+    stripe_size node['rs-storage']['device']['stripe_size']
+  end
+end
