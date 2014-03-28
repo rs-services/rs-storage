@@ -18,18 +18,18 @@
 #
 
 marker 'recipe_start_rightscale' do
-    template 'rightscale_audit_entry.erb'
+  template 'rightscale_audit_entry.erb'
 end
 
 include_recipe 'chef_handler::default'
 
-cookbook_file "#{node['chef_handler']['handler_path']}/backup_error_handler.rb" do
+cookbook_file "#{node['chef_handler']['handler_path']}/rs-storage_backup.rb" do
   source 'backup_error_handler.rb'
   action :create
 end
 
 chef_handler 'Rightscale::BackupErrorHandler' do
-  source "#{node['chef_handler']['handler_path']}/backup_error_handler.rb"
+  source "#{node['chef_handler']['handler_path']}/rs-storage_backup.rb"
   action :enable
 end
 
@@ -62,8 +62,8 @@ rightscale_backup nickname do
   lineage node['rs-storage']['device']['lineage']
   keep_last node['rs-storage']['backup']['keep']['keep_latest']
   dailies node['rs-storage']['backup']['keep']['dailies']
-  monthlies node['rs-storage']['backup']['keep']['monthlies']
   weeklies node['rs-storage']['backup']['keep']['weeklies']
+  monthlies node['rs-storage']['backup']['keep']['monthlies']
   yearlies node['rs-storage']['backup']['keep']['yearlies']
   action :cleanup
 end

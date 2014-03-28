@@ -8,7 +8,7 @@ version          '0.1.0'
 
 depends 'chef_handler'
 depends 'filesystem'
- depends 'lvm'
+depends 'lvm', '~> 1.0.8'
 depends 'marker'
 depends 'rightscale_backup'
 depends 'rightscale_volume'
@@ -78,7 +78,7 @@ attribute 'rs-storage/backup/lineage',
   :required => 'optional'
 
 attribute 'rs-storage/restore/lineage',
-  :display_name => 'Backup Lineage Override',
+  :display_name => 'Restore Lineage',
   :description => 'The lineage name to restore backups. Example: staging',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
