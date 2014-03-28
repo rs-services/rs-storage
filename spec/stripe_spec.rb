@@ -111,7 +111,7 @@ describe 'rs-storage::stripe' do
     end
 
     context 'timestamp is set' do
-      let(:timestamp) { Time.now }
+      let(:timestamp) { Time.now.to_i }
       let(:chef_run) do
         chef_runner_restore.node.set['rs-storage']['restore']['timestamp'] = timestamp
         chef_runner_restore.converge(described_recipe)

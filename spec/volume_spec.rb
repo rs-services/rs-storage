@@ -87,7 +87,7 @@ describe 'rs-storage::volume' do
     end
 
     context 'timestamp is set' do
-      let(:timestamp) { Time.now }
+      let(:timestamp) { Time.now.to_i }
       let(:chef_run) do
         chef_runner.node.set['rs-storage']['restore']['timestamp'] = timestamp
         chef_runner.converge(described_recipe)

@@ -17,10 +17,7 @@ describe 'rs-storage::decommission' do
         node.set['rs-storage']['device']['destroy_on_decommission'] = true
       end
     end
-    let(:nickname) { chef_run.node['rs-storage']['device']['nickname'] }
-    let(:chef_run) do
-      chef_runner.converge(described_recipe)
-    end
+    let(:nickname) { chef_runner.converge(described_recipe).node['rs-storage']['device']['nickname'] }
 
     context 'RightScale run state is shutting-down:terminate' do
       before do
@@ -32,17 +29,17 @@ describe 'rs-storage::decommission' do
       end
 
       context 'LVM is not used' do
-        let(:chef_run) do
-          chef_runner.node.set['rightscale_volume'][nickname]['device'] = '/dev/sda'
-          chef_runner.converge(described_recipe)
-        end
-
         before do
           mount = double
           Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
           allow(mount).to receive(:run_command)
           allow(mount).to receive(:error!)
           allow(mount).to receive(:stdout).and_return('/dev/sda on /mnt/storage type ext4 (auto)')
+        end
+
+        let(:chef_run) do
+          chef_runner.node.set['rightscale_volume'][nickname]['device'] = '/dev/sda'
+          chef_runner.converge(described_recipe)
         end
 
         it 'unmounts and disables the volume on the instance' do
@@ -72,9 +69,7 @@ describe 'rs-storage::decommission' do
 
         let(:chef_run) do
           chef_runner.node.set['rs-storage']['device']['stripe_count'] = 2
-          chef_runner.converge(described_recipe) do
-            RsStorage::Helper.stub(:is_lvm_used?) { true }
-          end
+          chef_runner.converge(described_recipe)
         end
         let(:logical_volume_device) do
           "/dev/mapper/#{nickname.gsub('_', '--')}--vg-#{nickname.gsub('_', '--')}--lv"
@@ -111,6 +106,10 @@ describe 'rs-storage::decommission' do
           allow(rs_state).to receive(:run_command)
           allow(rs_state).to receive(:error!)
           allow(rs_state).to receive(:stdout).and_return(state)
+        end
+
+        let(:chef_run) do
+          chef_runner.converge(described_recipe)
         end
 
         it 'logs that it is skipping destruction' do
