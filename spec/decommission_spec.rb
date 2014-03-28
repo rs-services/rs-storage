@@ -76,8 +76,8 @@ describe 'rs-storage::decommission' do
             RsStorage::Helper.stub(:is_lvm_used?) { true }
           end
         end
-        let(:logical_device_name) do
-          "/dev/mapper/#{nickname.gsub('_', '-')}-vg-#{nickname.gsub('_', '-')}-lv"
+        let(:logical_volume_device) do
+          "/dev/mapper/#{nickname.gsub('_', '--')}--vg-#{nickname.gsub('_', '--')}--lv"
         end
 
         it 'unmounts and disables the volume on the instance' do

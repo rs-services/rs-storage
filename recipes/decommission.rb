@@ -47,7 +47,6 @@ else
     mount node['rs-storage']['device']['mount_point'] do
       device logical_volume_device
       action [:umount, :disable]
-      only_if { ::File.exists?(logical_volume_device) }
     end
 
     log "LVM is used on the device(s). Cleaning up the LVM."
