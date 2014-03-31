@@ -22,7 +22,7 @@ stripe_count = node['rs-storage']['device']['stripe_count'].to_i
 nickname = node['rs-storage']['device']['nickname']
 size = node['rs-storage']['device']['volume_size'].to_i
 
-raise 'rs-storage/device/stripe_count should be at least 1' if stripe_count < 1
+raise 'rs-storage/device/stripe_count should be at least 2 for setting up stripe' if stripe_count < 2
 
 stripe_device_size = (size.to_f / stripe_count.to_f).ceil
 
