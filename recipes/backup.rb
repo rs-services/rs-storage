@@ -37,7 +37,8 @@ nickname = node['rs-storage']['device']['nickname']
 
 log "Freezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
 
-filesystem nickname do
+filesystem "freeze #{nickname}" do
+  label nickname
   mount node['rs-storage']['device']['mount_point']
   action :freeze
 end
@@ -51,7 +52,8 @@ end
 
 log "Unfreezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
 
-filesystem nickname do
+filesystem "unfreeze #{nickname}" do
+  label nickname
   mount node['rs-storage']['device']['mount_point']
   action :unfreeze
 end
@@ -59,7 +61,7 @@ end
 log 'Cleaning up old snapshots'
 
 rightscale_backup nickname do
-  lineage node['rs-storage']['device']['lineage']
+  lineage node['rs-storage']['backup']['lineage']
   keep_last node['rs-storage']['backup']['keep']['keep_latest']
   dailies node['rs-storage']['backup']['keep']['dailies']
   weeklies node['rs-storage']['backup']['keep']['weeklies']

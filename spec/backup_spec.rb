@@ -19,7 +19,8 @@ describe 'rs-storage::backup' do
   end
 
   it 'freezes the filesystem' do
-    expect(chef_run).to freeze_filesystem(nickname).with(
+    expect(chef_run).to freeze_filesystem("freeze #{nickname}").with(
+      label: nickname,
       mount: '/mnt/storage',
     )
   end
@@ -31,7 +32,8 @@ describe 'rs-storage::backup' do
   end
 
   it 'unfreezes the filesystem' do
-    expect(chef_run).to unfreeze_filesystem(nickname).with(
+    expect(chef_run).to unfreeze_filesystem("unfreeze #{nickname}").with(
+      label: nickname,
       mount: '/mnt/storage',
     )
   end
