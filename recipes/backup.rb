@@ -62,7 +62,7 @@ log 'Cleaning up old snapshots'
 
 rightscale_backup nickname do
   lineage node['rs-storage']['backup']['lineage']
-  keep_last node['rs-storage']['backup']['keep']['keep_latest']
+  keep_last node['rs-storage']['backup']['keep']['keep_last']
   dailies node['rs-storage']['backup']['keep']['dailies']
   weeklies node['rs-storage']['backup']['keep']['weeklies']
   monthlies node['rs-storage']['backup']['keep']['monthlies']

@@ -20,8 +20,10 @@
 # Enable/Disable scheduling backups
 default['rs-storage']['schedule']['enable'] = false
 
+# The hour for the backup schedule
 default['rs-storage']['schedule']['hour'] = nil
 
+# The minute for the backup schedule
 default['rs-storage']['schedule']['minute'] = nil
 
 # The mount point where the device will be mounted
