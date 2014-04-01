@@ -25,30 +25,30 @@ attribute 'rs-storage/device/stripe_count',
   :display_name => 'Device Stripe Count',
   :description => 'The number of device stripes to create. If this value is set to more than 1, it will create the' +
     ' specified number of devices and create an LVM on the devices.',
-  :default => '1',
+  :default => '2',
   :recipes => ['rs-storage::stripe', 'rs-storage::decommission'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/device/mount_point',
   :display_name => 'Device Mount Point',
   :description => 'The mount point to mount the device on. Example: /mnt/storage',
   :default => '/mnt/storage',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe', 'rs-storage::decommission'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/device/nickname',
   :display_name => 'Device Nickname',
   :description => 'Nickname for the device. Example: data_storage',
   :default => 'data_storage',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe', 'rs-storage::decommission'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/device/volume_size',
   :display_name => 'Device Volume Size',
   :description => 'Size of the volume to create. Example: 10',
   :default => '10',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/device/iops',
   :display_name => 'Device IOPS',
@@ -69,26 +69,26 @@ attribute 'rs-storage/device/destroy_on_decommission',
   :description => 'If set to true, the devices will be destroyed on decommission',
   :default => 'false',
   :recipes => ['rs-storage::decommission'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/backup/lineage',
   :display_name => 'Backup Lineage',
   :description => 'The backup lineage. Example: production',
   :recipes => ['rs-storage::backup'],
-  :required => 'optional'
+  :required => 'required'
 
 attribute 'rs-storage/restore/lineage',
   :display_name => 'Restore Lineage',
   :description => 'The lineage name to restore backups. Example: staging',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/restore/timestamp',
   :display_name => 'Restore Timestamp',
   :description => 'The timestamp to restore from a backup taken on or before the timestamp in the same lineage.' +
     ' Example: 1391473172',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/backup/keep/daily',
   :display_name => 'Backup Keep Daily',
@@ -118,9 +118,9 @@ attribute 'rs-storage/backup/keep/yearly',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/keep/max_snapshots',
-  :display_name => 'Backup Keep Max Snapshots',
-  :description => 'Number of maximum snapshots to keep. Example: 60',
+attribute 'rs-storage/backup/keep/keep_last',
+  :display_name => 'Backup Keep Last Snapshots',
+  :description => 'Number of snapshots to keep. Example: 60',
   :default => '60',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
@@ -131,17 +131,17 @@ attribute 'rs-storage/schedule/enable',
   :default => 'false',
   :choice => ['true', 'false'],
   :recipes => ['rs-storage::schedule'],
-  :required => 'optional'
+  :required => 'recommended'
 
 attribute 'rs-storage/schedule/hour',
   :display_name => 'Backup Schedule Hour',
   :description => "The hour to schedule the backup on. Use '*' for taking backups every hour. This value should be' +
     ' between 0 and 23. Example: 23",
   :recipes => ['rs-storage::schedule'],
-  :required => 'optional'
+  :required => 'required'
 
 attribute 'rs-storage/schedule/minute',
   :display_name => 'Backup Schedule Minute',
   :description => 'The minute to schedule the backup on. This value should be between 0 and 59. Example: 30',
   :recipes => ['rs-storage::schedule'],
-  :required => 'optional'
+  :required => 'required'
