@@ -36,7 +36,7 @@ default['rs-storage']['device']['nickname'] = 'data_storage'
 default['rs-storage']['device']['volume_size'] = 10
 
 # Number of volumes in the stripe
-default['rs-storage']['device']['stripe_count'] = 1
+default['rs-storage']['device']['stripe_count'] = 2
 
 # I/O Operations Per Second value
 default['rs-storage']['device']['iops'] = nil
