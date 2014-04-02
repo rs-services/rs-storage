@@ -139,6 +139,7 @@ the volume.
 - `rs-storage/device/iops` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only be used
   with Amazon EC2. Default is `nil`.
 - `rs-storage/device/filesystem` - The filesystem to be used on the device. Default is `'ext4'`.
+- `rs-storage/device/detach_timeout` - Amount of time (in seconds) to wait for a volume to detach at decommission. Default is `300` (5 minutes).
 - `rs-storage/device/destroy_on_decommission` - Whether to destroy the device during the decommission of the server.
   Default is `false`.
 - `rs-storage/device/mkfs_options` - Additional mkfs options for formatting the device. Default is `'-F'`. This is
