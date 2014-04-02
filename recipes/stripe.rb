@@ -24,6 +24,13 @@ size = node['rs-storage']['device']['volume_size'].to_i
 
 raise 'rs-storage/device/stripe_count should be at least 2 for setting up stripe' if stripe_count < 2
 
+detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i * stripe_count
+
+execute "set decommission timeout to #{detach_timeout}" do
+  command "rs_config --set decommission_timeout #{detach_timeout}"
+  not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
+end
+
 stripe_device_size = (size.to_f / stripe_count.to_f).ceil
 
 Chef::Log.info "Total size is: #{size}"

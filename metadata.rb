@@ -64,9 +64,16 @@ attribute 'rs-storage/device/filesystem',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
+attribute 'rs-storage/device/detach_timeout',
+  :display_name => 'Detach Timeout',
+  :description => 'Amount of time (in seconds) to wait for a volume to detach at decommission. Example: 300',
+  :default => '300',
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :required => 'optional'
+
 attribute 'rs-storage/device/destroy_on_decommission',
   :display_name => 'Destroy on Decommission',
-  :description => 'If set to true, the devices will be destroyed on decommission',
+  :description => 'If set to true, the devices will be destroyed on decommission.',
   :default => 'false',
   :recipes => ['rs-storage::decommission'],
   :required => 'recommended'

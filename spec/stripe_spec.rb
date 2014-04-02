@@ -3,7 +3,6 @@ require_relative 'spec_helper'
 describe 'rs-storage::stripe' do
   let(:chef_runner) do
     ChefSpec::Runner.new do |node|
-      node.set['rs-storage']['device']['stripe_count'] = 2
       node.set['rightscale_volume']['data_storage_1']['device'] = '/dev/sda'
       node.set['rightscale_volume']['data_storage_2']['device'] = '/dev/sdb'
       node.set['rightscale_backup']['data_storage']['devices'] = ['/dev/sda', '/dev/sdb']
@@ -14,9 +13,22 @@ describe 'rs-storage::stripe' do
   let(:nickname_2) { "#{nickname}_2" }
   let(:volume_group) { "#{nickname.gsub('_', '-')}-vg" }
   let(:logical_volume) { "#{nickname.gsub('_', '-')}-lv" }
+  let(:detach_timeout) do
+    chef_runner.converge(described_recipe).node['rs-storage']['device']['detach_timeout'].to_i
+  end
+
+  before do
+    stub_command('[ `rs_config --get decommission_timeout` -eq 600 ]').and_return(false)
+  end
 
   context 'rs-storage/restore/lineage is not set' do
     let(:chef_run) { chef_runner.converge(described_recipe) }
+
+    it 'sets the decommission timeout' do
+      expect(chef_run).to run_execute("set decommission timeout to #{detach_timeout * 2}").with(
+        command: "rs_config --set decommission_timeout #{detach_timeout * 2}",
+      )
+    end
 
     it 'creates two new volumes and attaches them' do
       expect(chef_run).to create_rightscale_volume(nickname_1).with(

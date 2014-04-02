@@ -44,6 +44,9 @@ default['rs-storage']['device']['iops'] = nil
 # The filesystem to be used on the device
 default['rs-storage']['device']['filesystem'] = 'ext4'
 
+# Amount of time (in seconds) to wait for a volume to detach at decommission
+default['rs-storage']['device']['detach_timeout'] = 300
+
 # Whether to destroy on decommission
 default['rs-storage']['device']['destroy_on_decommission'] = false
 
