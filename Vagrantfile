@@ -90,7 +90,6 @@ Vagrant.configure("2") do |config|
 
     chef.run_list = [
       "recipe[rs-storage::default]",
-      "recipe[rs-storage::schedule]"
     ]
   end
 end
