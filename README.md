@@ -2,9 +2,13 @@
 
 [![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-storage.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-storage)
 
-Provides recipes for managing volumes on a Server in a RightScale supported cloud including the creation of single and
-multi-stripe volumes, taking backups of the volumes, restoring from the backups, scheduling periodic backups, and
-detaching and deleting the volumes when the server is decommissioned.
+Provides recipes for managing volumes on a Server in a RightScale supported cloud which include:
+
+* Creation of single and multi-stripe volumes
+* Taking backups of volumes
+* Restoring from backups
+* Schedule periodic backups
+* Detaching and deleting volumes when server is decommissioned.
 
 Github Repository: [https://github.com/rightscale-cookbooks/rs-storage](https://github.com/rightscale-cookbooks/rs-storage)
 
@@ -57,20 +61,29 @@ timestamp will be restored. To restore backup from a specific timestamp, set the
 
 ## Creating stripe of volumes
 
-To create a new stripe of volumes, run the `rs-storage::stripe` recipe with the following attributes set:
+To create a new stripe of volumes using LVM, run the `rs-storage::stripe` recipe with the following attributes set:
 
 - `node['rs-storage']['device']['nickname']` - the nickname to use as prefix for the stripe of volumes
 - `node['rs-storage']['device']['stripe_count']` - number of volumes to create in the stripe
 - `node['rs-storage']['device']['volume_size']` - the total size of the stripe
 - `node['rs-storage']['device']['filesystem']` - the filesystem to use on the volume
-- `node['rs-storage']['device']['mount_point']` - the location to the mount the logical volume of the LVM stripe
+- `node['rs-storage']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
 
-This will create the number of volumes specified in `node['rs-storage']['device']['stripe_count']`. Each volume created will have a
-nickname of `"#{nickname}-#{stripe_number}"`. A volume group will be created with name `"#{nickname}-vg"` and a
-logical volume will be created in this volume group with name `"#{nickname}-lv"`. This logical volume will formatted
+This will create the number of volumes specified in `node['rs-storage']['device']['stripe_count']`. Each volume created 
+will have a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calculated by the following
+formula:
+
+```ruby
+(total_size.to_f / stripe_count.to_f).ceil
+
+# For example, total size = 10, stripe count = 3
+(10.0 / 3.0).ceil
+# => 4.0
+```
+
+A volume group will be created with name `"#{nickname}-vg"` and a
+logical volume will be created in this volume group with name `"#{nickname}-lv"`. This logical volume will be formatted
 with the filesystem specified and mounted on the location specified.
-
-This recipe can also be used with a stripe count of `1`. This allows creating LVM on a single volume.
 
 ## Restoring stripe of volumes from a backup
 
@@ -107,8 +120,8 @@ This will cleanup the old snapshots on the cloud based on the criteria specified
 To schedule automated backups, run the `rs-storage::schedule` recipe with the following attributes set:
 
 - `node['rs-storage']['schedule']['enable']` - to enable/disable automated backups
-- `node['rs-storage']['schedule']['hour']` - the hour to take the backup on
-- `node['rs-storage']['schedule']['minute']` - the minute to take the backup on
+- `node['rs-storage']['schedule']['hour']` - the hour to take the backup on (should use crontab syntax)
+- `node['rs-storage']['schedule']['minute']` - the minute to take the backup on (should use crontab syntax)
 - `node['rs-storage']['backup']['lineage']` - the lineage name to be used for the backup
 
 This will create a crontab entry to run the `rs-storage::backup` recipe periodically at the given minute and hour. To
@@ -117,7 +130,7 @@ recipe and this will remove the crontab entry.
 
 ## Deleting volume(s)
 
-This operation will be part of the decomission bundle in a RightScale ServerTemplate where the volumes attached to
+This operation will be part of the decommission bundle in a RightScale ServerTemplate where the volumes attached to
 the server are detached and deleted from the cloud but this can also be used as an operational recipe. This recipe will
 do nothing in the following conditions:
 
@@ -125,17 +138,17 @@ do nothing in the following conditions:
 - when server reboots
 
 This recipe also has a safety attribute `node['rs-storage']['device']['destroy_on_decommission']`. This attribute will be set to
-`true` by default and should be overridden and set to `true` in order for the devices to be detached and deleted. If an
+`false` by default and should be overridden and set to `true` in order for the devices to be detached and deleted. If an
 LVM is found (with multiple stripe using `rs-storage::stripe`), the LVM will be conditionally removed before detaching
 the volume.
 
 # Attributes
 
 - `node['rs-storage']['device']['nickname']` - The nickname for the device or stripe of devices. Default is `'data_storage'`.
-- `node['rs-storage']['device']['mount_point']` - The moint point for the device. Default is `'/mnt/storage'`.
+- `node['rs-storage']['device']['mount_point']` - The mount point for the device. Default is `'/mnt/storage'`.
 - `node['rs-storage']['device']['volume_size']` - The size of volume to be created. If stripe of devices is used, this will be the
   total size of the stripe. Default is `10`.
-- `node['rs-storage']['device']['stripe_count']` - The number of stripes to be created. Default is `1`.
+- `node['rs-storage']['device']['stripe_count']` - The number of stripes to be created. Default is `2`.
 - `node['rs-storage']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only be used
   with Amazon EC2. Default is `nil`.
 - `node['rs-storage']['device']['filesystem']` - The filesystem to be used on the device. Default is `'ext4'`.
