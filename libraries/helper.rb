@@ -73,7 +73,7 @@ module RsStorage
         # Remove the logical volumes
         logical_volume_names.each do |logical_volume_name|
           Chef::Log.info "Removing logical volume '#{logical_volume_name}'"
-          command = "lvremove /dev/mapper/#{to_dm_name(volume_group_name)}-#{to_dm_name(logical_volume_name)} --force"
+          command = "lvremove --force /dev/mapper/#{to_dm_name(volume_group_name)}-#{to_dm_name(logical_volume_name)}"
           Chef::Log.debug "Running command: '#{command}'"
           output = lvm.raw(command)
           Chef::Log.debug "Command output: #{output}"

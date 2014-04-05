@@ -47,7 +47,7 @@ default['rs-storage']['device']['filesystem'] = 'ext4'
 # Amount of time (in seconds) to wait for a volume to detach at decommission
 default['rs-storage']['device']['detach_timeout'] = 300
 
-# Whether to destroy on decommission
+# Whether to destroy volume(s) on decommission
 default['rs-storage']['device']['destroy_on_decommission'] = false
 
 # The additional options/flags to use for the `mkfs` command. If the whole device is formatted, the force (-F) flag
@@ -66,7 +66,7 @@ default['rs-storage']['restore']['lineage'] = nil
 # The timestamp to restore backup from a backup taken on or before the timestamp in the same lineage
 default['rs-storage']['restore']['timestamp'] = nil
 
-# Maximum snapshots to keep
+# Maximum backups to keep
 default['rs-storage']['backup']['keep']['keep_last'] = 60
 
 # Daily backups to keep
