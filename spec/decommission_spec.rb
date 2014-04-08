@@ -65,6 +65,11 @@ describe 'rs-storage::decommission' do
           allow(mount).to receive(:run_command)
           allow(mount).to receive(:error!)
           allow(mount).to receive(:stdout).and_return('/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)')
+
+          lvdisplay = double
+          Mixlib::ShellOut.stub(:new).with("lvdisplay '/dev/mapper/vol-group--logical-volume-1'").and_return(lvdisplay)
+          allow(lvdisplay).to receive(:run_command)
+          allow(lvdisplay).to receive(:status).and_return(0)
         end
 
         let(:chef_run) do
