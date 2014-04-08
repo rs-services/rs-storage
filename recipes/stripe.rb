@@ -21,24 +21,24 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
-stripe_count = node['rs-storage']['device']['stripe_count'].to_i
+device_count = node['rs-storage']['device']['count'].to_i
 nickname = node['rs-storage']['device']['nickname']
 size = node['rs-storage']['device']['volume_size'].to_i
 
-raise 'rs-storage/device/stripe_count should be at least 2 for setting up stripe' if stripe_count < 2
+raise 'rs-storage/device/count should be at least 2 for setting up stripe' if device_count < 2
 
-detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i * stripe_count
+detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i * device_count
 
 execute "set decommission timeout to #{detach_timeout}" do
   command "rs_config --set decommission_timeout #{detach_timeout}"
   not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
 end
 
-stripe_device_size = (size.to_f / stripe_count.to_f).ceil
+each_device_size = (size.to_f / device_count.to_f).ceil
 
 Chef::Log.info "Total size is: #{size}"
-Chef::Log.info "Stripe count is set to: #{stripe_count}"
-Chef::Log.info "Each device in the stripe will created of size: #{stripe_device_size}"
+Chef::Log.info "Device count in logical volume is set to: #{device_count}"
+Chef::Log.info "Each device in the logical volume will created of size: #{each_device_size}"
 
 device_nicknames = []
 
@@ -46,14 +46,15 @@ device_nicknames = []
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
 
+# Install packages required for setting up LVM
 include_recipe 'lvm::default'
 
 # rs-storage/restore/lineage is empty, creating new volume(s) and setting up LVM
 if node['rs-storage']['restore']['lineage'].to_s.empty?
-  1.upto(stripe_count) do |stripe_num|
-    device_nicknames << "#{nickname}_#{stripe_num}"
-    rightscale_volume "#{nickname}_#{stripe_num}" do
-      size stripe_device_size
+  1.upto(device_count) do |device_num|
+    device_nicknames << "#{nickname}_#{device_num}"
+    rightscale_volume "#{nickname}_#{device_num}" do
+      size each_device_size
       options volume_options
       action [:create, :attach]
     end
@@ -63,7 +64,7 @@ else
   rightscale_backup nickname do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
-    size stripe_device_size
+    size each_device_size
     options volume_options
     action :restore
   end
@@ -72,8 +73,10 @@ end
 # Remove any characters other than alphanumeric and dashes and replace with dashes
 sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
-# Setup LVM on the volumes. This resource will setup the physical volumes, create a volume group and a logical volume
-# as well as formats the volume and mounts in the specifiec mount point.
+# Setup LVM on the volumes. The following resources will:
+#   - initialize the physical volumes for use by LVM
+#   - create volume group and logical volume
+#   - format and mount the logical volume
 lvm_volume_group "#{sanitized_nickname}-vg" do
   physical_volumes(lazy do
     if node['rs-storage']['restore']['lineage'].to_s.empty?
@@ -89,8 +92,6 @@ lvm_logical_volume "#{sanitized_nickname}-lv" do
   size '100%VG'
   filesystem node['rs-storage']['device']['filesystem']
   mount_point node['rs-storage']['device']['mount_point']
-  if stripe_count > 1
-    stripes stripe_count
-    stripe_size node['rs-storage']['device']['stripe_size']
-  end
+  stripes device_count
+  stripe_size node['rs-storage']['device']['stripe_size']
 end

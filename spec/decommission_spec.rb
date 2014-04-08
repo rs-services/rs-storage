@@ -68,7 +68,7 @@ describe 'rs-storage::decommission' do
         end
 
         let(:chef_run) do
-          chef_runner.node.set['rs-storage']['device']['stripe_count'] = 2
+          chef_runner.node.set['rs-storage']['device']['count'] = 2
           chef_runner.converge(described_recipe)
         end
         let(:logical_volume_device) do

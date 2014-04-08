@@ -39,7 +39,7 @@ else
     # Remove any characters other than alphanumeric and dashes and replace with dashes
     sanitized_nickname = nickname.downcase.gsub(/[^-a-z0-9]/, '-')
 
-    # Construct the logical volume from the name of the volume group and the name of the logical volume similat to how the
+    # Construct the logical volume from the name of the volume group and the name of the logical volume similar to how the
     # lvm cookbook constructs the name during the creation of the logical volume
     logical_volume_device = "/dev/mapper/#{to_dm_name("#{sanitized_nickname}-vg")}-#{to_dm_name("#{sanitized_nickname}-lv")}"
 
@@ -58,8 +58,8 @@ else
     end
 
     # Detach and delete all attached volumes
-    1.upto(node['rs-storage']['device']['stripe_count'].to_i) do |stripe_num|
-      rightscale_volume "#{nickname}_#{stripe_num}" do
+    1.upto(node['rs-storage']['device']['count'].to_i) do |device_num|
+      rightscale_volume "#{nickname}_#{device_num}" do
         action [:detach, :delete]
       end
     end

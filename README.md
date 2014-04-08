@@ -64,17 +64,17 @@ timestamp will be restored. To restore backup from a specific timestamp, set the
 To create a new stripe of volumes using LVM, run the `rs-storage::stripe` recipe with the following attributes set:
 
 - `node['rs-storage']['device']['nickname']` - the nickname to use as prefix for the stripe of volumes
-- `node['rs-storage']['device']['stripe_count']` - number of volumes to create in the stripe
+- `node['rs-storage']['device']['count']` - number of volumes to create in the stripe
 - `node['rs-storage']['device']['volume_size']` - the total size of the stripe
 - `node['rs-storage']['device']['filesystem']` - the filesystem to use on the volume
 - `node['rs-storage']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
 
-This will create the number of volumes specified in `node['rs-storage']['device']['stripe_count']`. Each volume created 
+This will create the number of volumes specified in `node['rs-storage']['device']['count']`. Each volume created 
 will have a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calculated by the following
 formula:
 
 ```ruby
-(total_size.to_f / stripe_count.to_f).ceil
+(total_size.to_f / device_count.to_f).ceil
 
 # For example, total size = 10, stripe count = 3
 (10.0 / 3.0).ceil
@@ -148,7 +148,7 @@ the volume.
 - `node['rs-storage']['device']['mount_point']` - The mount point for the device. Default is `'/mnt/storage'`.
 - `node['rs-storage']['device']['volume_size']` - The size of volume to be created. If stripe of devices is used, this will be the
   total size of the stripe. Default is `10`.
-- `node['rs-storage']['device']['stripe_count']` - The number of stripes to be created. Default is `2`.
+- `node['rs-storage']['device']['count']` - The number of devices to be created for the stripe. Default is `2`.
 - `node['rs-storage']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only be used
   with Amazon EC2. Default is `nil`.
 - `node['rs-storage']['device']['filesystem']` - The filesystem to be used on the device. Default is `'ext4'`.

@@ -23,11 +23,13 @@ end
 
 include_recipe 'chef_handler::default'
 
+# Create the backup error handler
 cookbook_file "#{node['chef_handler']['handler_path']}/rs-storage_backup.rb" do
   source 'backup_error_handler.rb'
   action :create
 end
 
+# Enable the backup error handler so the filesystem is unfrozen in case of a backup failure
 chef_handler 'Rightscale::BackupErrorHandler' do
   source "#{node['chef_handler']['handler_path']}/rs-storage_backup.rb"
   action :enable

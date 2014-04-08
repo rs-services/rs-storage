@@ -16,15 +16,15 @@ depends 'rightscale_volume'
 recipe 'rs-storage::default', 'Sets up required dependencies for using this cookbook'
 recipe 'rs-storage::volume', 'Creates a volume and attaches it to the server'
 recipe 'rs-storage::stripe', 'Creates volumes, attaches them to the server, and sets up LVM stripe'
-recipe 'rs-storage::backup', 'Creates a backup'
+recipe 'rs-storage::backup', :description => 'Creates a backup', :thread => 'storage_backup'
 recipe 'rs-storage::decommission', 'Destroys LVM conditionally, detaches and destroys volumes. This recipe should' +
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
 recipe 'rs-storage::schedule', 'Enable/disable periodic backups based on rs-storage/schedule/enable'
 
-attribute 'rs-storage/device/stripe_count',
-  :display_name => 'Device Stripe Count',
-  :description => 'The number of device stripes to create. If this value is set to more than 1, it will create the' +
-    ' specified number of devices and create an LVM on the devices.',
+attribute 'rs-storage/device/count',
+  :display_name => 'Device Count',
+  :description => 'The number of devices to create and add to the Logical Volume. If this value is set to more than 1,' +
+    ' it will create the specified number of devices and create an LVM on the devices.',
   :default => '2',
   :recipes => ['rs-storage::stripe', 'rs-storage::decommission'],
   :required => 'recommended'
@@ -45,7 +45,7 @@ attribute 'rs-storage/device/nickname',
 
 attribute 'rs-storage/device/volume_size',
   :display_name => 'Device Volume Size',
-  :description => 'Size of the volume or logical volume to create. Example: 10',
+  :description => 'Size of the volume or logical volume to create (in GB). Example: 10',
   :default => '10',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'recommended'

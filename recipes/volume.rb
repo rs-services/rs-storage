@@ -22,22 +22,23 @@ marker "recipe_start_rightscale" do
 end
 
 detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i
+nickname = node['rs-storage']['device']['nickname']
+size = node['rs-storage']['device']['volume_size'].to_i
 
 execute "set decommission timeout to #{detach_timeout}" do
   command "rs_config --set decommission_timeout #{detach_timeout}"
   not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
 end
 
-nickname = node['rs-storage']['device']['nickname']
 
 # Cloud-specific volume options
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
 
 if node['rs-storage']['restore']['lineage'].to_s.empty?
-  log "Creating a new volume '#{nickname}' with size #{node['rs-storage']['device']['volume_size']}"
+  log "Creating a new volume '#{nickname}' with size #{size}"
   rightscale_volume nickname do
-    size node['rs-storage']['device']['volume_size'].to_i
+    size size
     options volume_options
     action [:create, :attach]
   end
@@ -61,7 +62,7 @@ else
   rightscale_backup nickname do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
-    size node['rs-storage']['device']['volume_size'].to_i
+    size size
     options volume_options
     action :restore
   end

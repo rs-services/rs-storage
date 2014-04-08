@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+marker "recipe_start_rightscale" do
+  template "rightscale_audit_entry.erb"
+end
+
 schedule_enable = node['rs-storage']['schedule']['enable'] == true || node['rs-storage']['schedule']['enable'] == 'true'
 schedule_hour = node['rs-storage']['schedule']['hour']
 schedule_minute = node['rs-storage']['schedule']['minute']

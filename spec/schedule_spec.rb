@@ -32,7 +32,7 @@ describe 'rs-storage::schedule' do
     end
     let(:lineage) { chef_run.node['rs-storage']['backup']['lineage'] }
 
-    it 'deletess a crontab entry' do
+    it 'deletes a crontab entry' do
       expect(chef_run).to delete_cron("backup_schedule_#{lineage}").with(
         minute: chef_run.node['rs-storage']['schedule']['minute'],
         hour: chef_run.node['rs-storage']['schedule']['hour'],
