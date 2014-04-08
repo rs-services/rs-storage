@@ -72,7 +72,7 @@ default['rs-storage']['backup']['keep']['keep_last'] = 60
 # Daily backups to keep
 default['rs-storage']['backup']['keep']['dailies'] = 14
 
-# Weekly backups to keep
+# Weekly backups to keep (Keep weekly backups for 1.5 months)
 default['rs-storage']['backup']['keep']['weeklies'] = 6
 
 # Monthly backups to keep
