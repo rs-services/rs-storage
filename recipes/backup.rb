@@ -64,10 +64,10 @@ log 'Cleaning up old snapshots'
 
 rightscale_backup nickname do
   lineage node['rs-storage']['backup']['lineage']
-  keep_last node['rs-storage']['backup']['keep']['keep_last']
-  dailies node['rs-storage']['backup']['keep']['dailies']
-  weeklies node['rs-storage']['backup']['keep']['weeklies']
-  monthlies node['rs-storage']['backup']['keep']['monthlies']
-  yearlies node['rs-storage']['backup']['keep']['yearlies']
+  keep_last node['rs-storage']['backup']['keep']['keep_last'].to_i
+  dailies node['rs-storage']['backup']['keep']['dailies'].to_i
+  weeklies node['rs-storage']['backup']['keep']['weeklies'].to_i
+  monthlies node['rs-storage']['backup']['keep']['monthlies'].to_i
+  yearlies node['rs-storage']['backup']['keep']['yearlies'].to_i
   action :cleanup
 end
