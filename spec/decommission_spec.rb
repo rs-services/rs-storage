@@ -25,6 +25,7 @@ describe 'rs-storage::decommission' do
         Mixlib::ShellOut.stub(:new).with('rs_state --type=run').and_return(rs_state)
         allow(rs_state).to receive(:run_command)
         allow(rs_state).to receive(:error!)
+        allow(rs_state).to receive(:live_stream=)
         allow(rs_state).to receive(:stdout).and_return('shutting-down:terminate')
       end
 
@@ -34,6 +35,7 @@ describe 'rs-storage::decommission' do
           Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
           allow(mount).to receive(:run_command)
           allow(mount).to receive(:error!)
+          allow(mount).to receive(:live_stream=)
           allow(mount).to receive(:stdout).and_return('/dev/sda on /mnt/storage type ext4 (auto)')
         end
 
@@ -64,11 +66,13 @@ describe 'rs-storage::decommission' do
           Mixlib::ShellOut.stub(:new).with('mount').and_return(mount)
           allow(mount).to receive(:run_command)
           allow(mount).to receive(:error!)
+          allow(mount).to receive(:live_stream=)
           allow(mount).to receive(:stdout).and_return('/dev/mapper/vol-group--logical-volume-1 on /mnt/storage type ext4 (auto)')
 
           lvdisplay = double
           Mixlib::ShellOut.stub(:new).with("lvdisplay '/dev/mapper/vol-group--logical-volume-1'").and_return(lvdisplay)
           allow(lvdisplay).to receive(:run_command)
+          allow(lvdisplay).to receive(:live_stream=)
           allow(lvdisplay).to receive(:status).and_return(0)
         end
 
@@ -110,6 +114,7 @@ describe 'rs-storage::decommission' do
           Mixlib::ShellOut.stub(:new).with('rs_state --type=run').and_return(rs_state)
           allow(rs_state).to receive(:run_command)
           allow(rs_state).to receive(:error!)
+          allow(rs_state).to receive(:live_stream=)
           allow(rs_state).to receive(:stdout).and_return(state)
         end
 
