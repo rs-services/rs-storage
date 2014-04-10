@@ -148,8 +148,14 @@ module RsStorage
     end
 
     # Obtains the run state of the server. It uses the `rs_state` utility to get the current system run state.
-    # Possible values for this command: booting, booting:reboot, operational, stranded,
-    #                                   shutting-down:reboot, shutting-down:terminate, shutting-down:stop
+    # Possible values for this command:
+    # - booting
+    # - booting:reboot
+    # - operational
+    # - stranded
+    # - shutting-down:reboot
+    # - shutting-down:terminate
+    # - shutting-down:stop
     #
     # @return [String] the current system run state
     #

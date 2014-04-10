@@ -92,8 +92,8 @@ attribute 'rs-storage/restore/lineage',
 
 attribute 'rs-storage/restore/timestamp',
   :display_name => 'Restore Timestamp',
-  :description => 'The timestamp (the seconds since UNIX epoch) to restore from a backup taken on or before the timestamp in the same lineage.' +
-    ' Example: 1391473172',
+  :description => 'The timestamp (in seconds since UNIX epoch) to select a backup to restore from.' +
+    ' The backup selected will have been created on or before this timestamp. Example: 1391473172',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'recommended'
 
