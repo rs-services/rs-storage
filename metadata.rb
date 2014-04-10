@@ -142,8 +142,8 @@ attribute 'rs-storage/schedule/enable',
 
 attribute 'rs-storage/schedule/hour',
   :display_name => 'Backup Schedule Hour',
-  :description => "The hour to schedule the backup on. Use '*' for taking backups every hour. This value should' +
-    ' abide by crontab crontab syntax. Example: 23",
+  :description => "The hour to schedule the backup on. This value should abide by crontab syntax. Use '*' for taking' +
+    ' backups every hour. Example: 23",
   :recipes => ['rs-storage::schedule'],
   :required => 'required'
 
