@@ -1,8 +1,13 @@
 source 'https://rubygems.org'
 
+gem 'rake'
 gem 'berkshelf'
 gem 'thor-foodcritic'
-gem 'thor-scmversion'
-gem 'kitchen-vagrant', :group => :integration
 
-gem 'test-kitchen', '~> 1.0.0.beta.2', :group => :integration
+group :integration do
+  gem 'test-kitchen', '~> 1.2.1'
+  gem 'kitchen-vagrant'
+  gem 'strainer', '~> 3.3'
+  gem 'chefspec', '~> 3.4.0'
+  gem 'travis-lint'
+end
