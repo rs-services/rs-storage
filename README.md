@@ -47,18 +47,6 @@ To create a volume with the IOPS on EC2, set the following attribute before runn
 
 - `node['rs-storage']['device']['iops']` - the value of IOPS to use
 
-## Restoring a volume from a backup
-
-To restore a volume from backup, run the `rs-storage::volume` recipe with the same set of attributes mentioned in the
-[previous section](#creating-a-new-volume) along with the following attribute:
-
-- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from.
-
-This will restore the volume from the backup instead of creating a new one. By default, the backup with the latest
-timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
-
-- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
-
 ## Creating stripe of volumes
 
 To create a new stripe of volumes using LVM, run the `rs-storage::stripe` recipe with the following attributes set:
@@ -69,7 +57,7 @@ To create a new stripe of volumes using LVM, run the `rs-storage::stripe` recipe
 - `node['rs-storage']['device']['filesystem']` - the filesystem to use on the volume
 - `node['rs-storage']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
 
-This will create the number of volumes specified in `node['rs-storage']['device']['count']`. Each volume created 
+This will create the number of volumes specified in `node['rs-storage']['device']['count']`. Each volume created
 will have a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calculated by the following
 formula:
 
@@ -84,18 +72,6 @@ formula:
 A volume group will be created with name `"#{nickname}-vg"` and a
 logical volume will be created in this volume group with name `"#{nickname}-lv"`. This logical volume will be formatted
 with the filesystem specified and mounted on the location specified.
-
-## Restoring stripe of volumes from a backup
-
-To restore a stripe of volumes from the backup, run the `rs-storage::stripe` recipe with the same set of attributes
-mentioned in the [previous section](#creating-stripe-of-volumes) along with the following attribute:
-
-- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from
-
-This will restore the stripe of volumes from the backup matching the lineage. By default, the backup with the latest
-timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
-
-- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
 
 ## Backing up volume(s) & Cleaning up backups
 
@@ -114,6 +90,30 @@ The backup recipe also handles the cleanup of old volume snapshots and accepts t
 - `node['rs-storage']['backup']['keep']['yearlies']` - number of yearly backups to keep
 
 This will cleanup the old snapshots on the cloud based on the criteria specified.
+
+## Restoring a volume from a backup
+
+To restore a volume from backup, run the `rs-storage::volume` recipe with the same set of attributes mentioned in the
+[previous section](#creating-a-new-volume) along with the following attribute:
+
+- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from.
+
+This will restore the volume from the backup instead of creating a new one. By default, the backup with the latest
+timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
+
+- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
+
+## Restoring stripe of volumes from a backup
+
+To restore a stripe of volumes from the backup, run the `rs-storage::stripe` recipe with the same set of attributes
+mentioned in the [previous section](#creating-stripe-of-volumes) along with the following attribute:
+
+- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from
+
+This will restore the stripe of volumes from the backup matching the lineage. By default, the backup with the latest
+timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
+
+- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
 
 ## Scheduling automated backups of volume(s)
 
@@ -189,7 +189,7 @@ filesystem specified in `node['rs-storage']['device']['filesystem']` and mount t
 
 ## `rs-storage::stripe`
 
-Creates a new stripe of volumes from scratch or from an existing backup based on the value provided in 
+Creates a new stripe of volumes from scratch or from an existing backup based on the value provided in
 `node['rs-storage']['restore']['lineage']` attribute. If this attribute is set, the volumes will be restored from a backup matching
 this lineage else a new stripe of volumes will be created from scratch. This recipe will create an LVM stripe on the
 volumes and formats the logical volume using the filesystem specified in `node['rs-storage']['device']['filesystem']`. This will
