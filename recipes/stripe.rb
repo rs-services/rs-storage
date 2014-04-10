@@ -38,7 +38,7 @@ each_device_size = (size.to_f / device_count.to_f).ceil
 
 Chef::Log.info "Total size is: #{size}"
 Chef::Log.info "Device count in logical volume is set to: #{device_count}"
-Chef::Log.info "Each device in the logical volume will created of size: #{each_device_size}"
+Chef::Log.info "Each device in the logical volume will be created of size: #{each_device_size}"
 
 device_nicknames = []
 
