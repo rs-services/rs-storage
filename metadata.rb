@@ -6,12 +6,12 @@ description      'Provides recipes for managing volumes on a Server in a RightSc
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '1.0.0'
 
-depends 'chef_handler'
-depends 'filesystem'
+depends 'chef_handler', '~> 1.1.6'
+depends 'filesystem', '~> 0.8.2'
 depends 'lvm', '~> 1.0.8'
-depends 'marker'
-depends 'rightscale_backup'
-depends 'rightscale_volume'
+depends 'marker', '~> 1.0.0'
+depends 'rightscale_backup', '~> 1.1.1'
+depends 'rightscale_volume', '~> 1.1.0'
 
 recipe 'rs-storage::default', 'Sets up required dependencies for using this cookbook'
 recipe 'rs-storage::volume', 'Creates a volume and attaches it to the server'
@@ -97,29 +97,29 @@ attribute 'rs-storage/restore/timestamp',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'recommended'
 
-attribute 'rs-storage/backup/keep/daily',
-  :display_name => 'Backup Keep Daily',
+attribute 'rs-storage/backup/keep/dailies',
+  :display_name => 'Backup Keep Dailies',
   :description => 'Number of daily backups to keep. Example: 14',
   :default => '14',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/keep/weekly',
-  :display_name => 'Backup Keep Weekly',
+attribute 'rs-storage/backup/keep/weeklies',
+  :display_name => 'Backup Keep Weeklies',
   :description => 'Number of weekly backups to keep. Example: 6',
   :default => '6',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/keep/monthly',
-  :display_name => 'Backup Keep Monthly',
+attribute 'rs-storage/backup/keep/monthlies',
+  :display_name => 'Backup Keep Monthlies',
   :description => 'Number of monthly backups to keep. Example: 12',
   :default => '12',
   :recipes => ['rs-storage::backup'],
   :required => 'optional'
 
-attribute 'rs-storage/backup/keep/yearly',
-  :display_name => 'Backup Keep Yearly',
+attribute 'rs-storage/backup/keep/yearlies',
+  :display_name => 'Backup Keep Yearlies',
   :description => 'Number of yearly backups to keep. Example: 2',
   :default => '2',
   :recipes => ['rs-storage::backup'],

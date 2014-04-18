@@ -66,9 +66,6 @@ default['rs-storage']['restore']['lineage'] = nil
 # The timestamp to restore backup from a backup taken on or before the timestamp in the same lineage
 default['rs-storage']['restore']['timestamp'] = nil
 
-# Maximum backups to keep
-default['rs-storage']['backup']['keep']['keep_last'] = 60
-
 # Daily backups to keep
 default['rs-storage']['backup']['keep']['dailies'] = 14
 
@@ -80,3 +77,6 @@ default['rs-storage']['backup']['keep']['monthlies'] = 12
 
 # Yearly backups to keep
 default['rs-storage']['backup']['keep']['yearlies'] = 2
+
+# Maximum backups to keep
+default['rs-storage']['backup']['keep']['keep_last'] = 60
