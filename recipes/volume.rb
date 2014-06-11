@@ -67,6 +67,10 @@ else
     action :restore
   end
 
+  directory node['rs-storage']['device']['mount_point'] do
+    recursive true
+  end
+
   mount node['rs-storage']['device']['mount_point'] do
     fstype node['rs-storage']['device']['filesystem']
     device lazy { node['rightscale_backup'][nickname]['devices'].first }
