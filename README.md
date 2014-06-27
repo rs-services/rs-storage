@@ -3,7 +3,7 @@
 [![Release](https://img.shields.io/github/release/rightscale-cookbooks/rs-storage.svg?style=flat)][release]
 [![Build Status](https://img.shields.io/travis/rightscale-cookbooks/rs-storage.svg?style=flat)][travis]
 
-[release]: https://github.com/rightscale-cookbooks/rs-storage/releases
+[release]: https://github.com/rightscale-cookbooks/rs-storage/releases/latest
 [travis]: https://travis-ci.org/rightscale-cookbooks/rs-storage
 
 Provides recipes for managing volumes on a Server in a RightScale supported cloud which include:
