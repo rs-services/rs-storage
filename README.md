@@ -1,6 +1,6 @@
 # rs-storage cookbook
 
-[![Release](http://img.shields.io/github/release/rightscale-cookbooks/rs-storage.svg?style=flat)][release]
+[![Release](https://img.shields.io/github/release/rightscale-cookbooks/rs-storage.svg?style=flat)][release]
 [![Build Status](https://img.shields.io/travis/rightscale-cookbooks/rs-storage.svg?style=flat)][travis]
 
 [release]: https://github.com/rightscale-cookbooks/rs-storage/releases
