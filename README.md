@@ -43,22 +43,23 @@ location specified.
 
 ### Provisioned IOPS on EC2
 
-To create a volume with the IOPS on EC2, set the following attribute before running `rs-storage::volume` recipe:
+To create a volume with IOPS on EC2, set the following attribute before running `rs-storage::volume` recipe:
 
 - `node['rs-storage']['device']['iops']` - the value of IOPS to use
 
-## Creating stripe of volumes
+## Creating a logical volume with striping
 
-To create a new stripe of volumes using LVM, run the `rs-storage::stripe` recipe with the following attributes set:
+To create a logical volume with striping using LVM, run the `rs-storage::stripe` recipe with the following attributes
+set:
 
-- `node['rs-storage']['device']['nickname']` - the nickname to use as prefix for the stripe of volumes
-- `node['rs-storage']['device']['count']` - number of volumes to create in the stripe
-- `node['rs-storage']['device']['volume_size']` - the total size of the stripe
-- `node['rs-storage']['device']['filesystem']` - the filesystem to use on the volume
-- `node['rs-storage']['device']['mount_point']` - the location to mount the logical volume of LVM stripe
+- `node['rs-storage']['device']['nickname']` - the nickname to use as prefix for the logical volume
+- `node['rs-storage']['device']['count']` - number of volumes to create in the logical volume
+- `node['rs-storage']['device']['volume_size']` - the total size of the logical volume
+- `node['rs-storage']['device']['filesystem']` - the filesystem to use on the logical volume
+- `node['rs-storage']['device']['mount_point']` - the location to mount the logical volume
 
 This will create the number of volumes specified in `node['rs-storage']['device']['count']`. Each volume created
-will have a nickname of `"#{nickname}-#{stripe_number}"`. The size for each volume is calculated by the following
+will have a nickname of `"#{nickname}_#{stripe_number}"`. The size for each volume is calculated by the following
 formula:
 
 ```ruby
@@ -69,9 +70,8 @@ formula:
 # => 4.0
 ```
 
-A volume group will be created with name `"#{nickname}-vg"` and a
-logical volume will be created in this volume group with name `"#{nickname}-lv"`. This logical volume will be formatted
-with the filesystem specified and mounted on the location specified.
+This will create a volume group with the name `"#{nickname}-vg"` and a logical volume in it with the name
+`"#{nickname}-lv"`, format it with the filesystem specified, and mount it on the location specified.
 
 ## Backing up volume(s) & Cleaning up backups
 
