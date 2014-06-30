@@ -96,24 +96,27 @@ This will cleanup the old snapshots on the cloud based on the criteria specified
 To restore a volume from backup, run the `rs-storage::volume` recipe with the same set of attributes mentioned in the
 [previous section](#creating-a-new-volume) along with the following attribute:
 
-- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from.
+- `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from
 
 This will restore the volume from the backup instead of creating a new one. By default, the backup with the latest
-timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
+timestamp will be restored. To restore a backup from a specific timestamp, set the following attribute:
 
-- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
+- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX
+  epoch)
 
-## Restoring stripe of volumes from a backup
+## Restoring a logical volume composed of multiple volumes from a backup
 
-To restore a stripe of volumes from the backup, run the `rs-storage::stripe` recipe with the same set of attributes
-mentioned in the [previous section](#creating-stripe-of-volumes) along with the following attribute:
+To restore a logical volume composed of multiple volumes from a backup, run the `rs-storage::stripe` recipe with the
+same set of attributes mentioned in the [previous section](#creating-stripe-of-volumes) along with the following
+attribute:
 
 - `node['rs-storage']['restore']['lineage']` - the lineage to restore the backup from
 
-This will restore the stripe of volumes from the backup matching the lineage. By default, the backup with the latest
+This will restore multiple volumes from the backup matching the lineage. By default, the backup with the latest
 timestamp will be restored. To restore backup from a specific timestamp, set the following attribute:
 
-- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from
+- `node['rs-storage']['restore']['timestamp']` - the timestamp of the backup to restore from (in seconds since UNIX
+  epoch)
 
 ## Scheduling automated backups of volume(s)
 
@@ -125,38 +128,40 @@ To schedule automated backups, run the `rs-storage::schedule` recipe with the fo
 - `node['rs-storage']['backup']['lineage']` - the lineage name to be used for the backup
 
 This will create a crontab entry to run the `rs-storage::backup` recipe periodically at the given minute and hour. To
-disable the automated backups, simply set `node['rs-storage']['schedule']['enable']` to `false` and rerun the `rs-storage::schedule`
-recipe and this will remove the crontab entry.
+disable the automated backups, simply set `node['rs-storage']['schedule']['enable']` to `false` and rerun the
+`rs-storage::schedule` recipe and this will remove the crontab entry.
 
 ## Deleting volume(s)
 
-This operation will be part of the decommission bundle in a RightScale ServerTemplate where the volumes attached to
+This operation should be part of the decommission bundle in a RightScale ServerTemplate where the volumes attached to
 the server are detached and deleted from the cloud but this can also be used as an operational recipe. This recipe will
 do nothing in the following conditions:
 
 - when the server enters a stop state
-- when server reboots
+- when the server reboots
 
-This recipe also has a safety attribute `node['rs-storage']['device']['destroy_on_decommission']`. This attribute will be set to
-`false` by default and should be overridden and set to `true` in order for the devices to be detached and deleted. If an
-LVM is found (with multiple stripe using `rs-storage::stripe`), the LVM will be conditionally removed before detaching
+This recipe also has a safety attribute `node['rs-storage']['device']['destroy_on_decommission']`. This attribute will
+be set to `false` by default and should be overridden and set to `true` in order for the devices to be detached and
+deleted. If an LVM is found (created using `rs-storage::stripe`), the LVM will be conditionally removed before detaching
 the volume.
 
 # Attributes
 
-- `node['rs-storage']['device']['nickname']` - The nickname for the device or stripe of devices. Default is `'data_storage'`.
+- `node['rs-storage']['device']['nickname']` - The nickname for the device or the logical volume comprising multiple of
+  devices. Default is `'data_storage'`.
 - `node['rs-storage']['device']['mount_point']` - The mount point for the device. Default is `'/mnt/storage'`.
-- `node['rs-storage']['device']['volume_size']` - The size of volume to be created. If stripe of devices is used, this will be the
-  total size of the stripe. Default is `10`.
-- `node['rs-storage']['device']['count']` - The number of devices to be created for the stripe. Default is `2`.
-- `node['rs-storage']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should only be used
-  with Amazon EC2. Default is `nil`.
+- `node['rs-storage']['device']['volume_size']` - The size (in gigabytes) of the volume to be created. If multiple
+  devices are used, this will be the total size of the logical volume. Default is `10`.
+- `node['rs-storage']['device']['count']` - The number of devices to be created for the logical volume. Default is `2`.
+- `node['rs-storage']['device']['iops']` - The IOPS value to be used for EC2 Provisioned IOPS. This attribute should
+  only be used with Amazon EC2. Default is `nil`.
 - `node['rs-storage']['device']['filesystem']` - The filesystem to be used on the device. Default is `'ext4'`.
-- `node['rs-storage']['device']['detach_timeout']` - Amount of time (in seconds) to wait for a volume to detach at decommission. Default is `300` (5 minutes).
-- `node['rs-storage']['device']['destroy_on_decommission']` - Whether to destroy the device during the decommission of the server.
-  Default is `false`.
-- `node['rs-storage']['device']['mkfs_options']` - Additional mkfs options for formatting the device. Default is `'-F'`. This is
-  required to avoid warnings about formatting the whole device when LVM is not used.
+- `node['rs-storage']['device']['detach_timeout']` - Amount of time (in seconds) to wait for a volume to detach during
+  the decommission of the server. Default is `300` (5 minutes).
+- `node['rs-storage']['device']['destroy_on_decommission']` - Whether to destroy the device during the decommission of
+  the server. Default is `false`.
+- `node['rs-storage']['device']['mkfs_options']` - Additional mkfs options for formatting the device. Default is `'-F'`
+  which is required to avoid warnings about formatting the whole device.
 - `node['rs-storage']['device']['stripe_size']` - The stripe size to use on LVM. Default is `512`.
 - `node['rs-storage']['backup']['lineage']` - The backup lineage. Default is `nil`.
 - `node['rs-storage']['backup']['keep']['keep_last']` - Maximum snapshots to keep. Default is `60`.
@@ -165,8 +170,8 @@ the volume.
 - `node['rs-storage']['backup']['keep']['monthlies']` - Number of monthly backups to keep. Default is `12`.
 - `node['rs-storage']['backup']['keep']['yearlies']` - Number of yearly backups to keep. Default is `2`.
 - `node['rs-storage']['restore']['lineage']` - The name of the lineage to restore the backups from. Default is `nil`.
-- `node['rs-storage']['restore']['timestamp']` - The timestamp to restore backup taken on or before the timestamp in the same
-  lineage. Default is `nil`.
+- `node['rs-storage']['restore']['timestamp']` - The timestamp to restore backup taken on or before the timestamp in the
+  same lineage. Default is `nil`.
 - `node['rs-storage']['schedule']['enable']` - Enable/disable automated backups. Default is `false`.
 - `node['rs-storage']['schedule']['hour']` - The backup schedule hour. Default is `nil`.
 - `node['rs-storage']['schedule']['minute']` - The backup schedule minute. Default is `nil`.
@@ -181,36 +186,39 @@ using the resources in these cookbooks.
 
 ## `rs-storage::volume`
 
-Creates a new volume from scratch or from an existing backup based on the value provided in
-`node['rs-storage']['restore']['lineage']` attribute. If this attribute is set, the volume will be restored from a backup matching
-this lineage else a new volume will be created from scratch. This recipe will also format the volume using the
-filesystem specified in `node['rs-storage']['device']['filesystem']` and mount the volume on the location specified in
-`node['rs-storage']['device']['mount_point']`.
+Creates a new volume from scratch or from an existing backup based on the value provided in the
+`node['rs-storage']['restore']['lineage']` attribute. If this attribute is set, the volume will be restored from a
+backup matching this lineage otherwise a new volume will be created from scratch. This recipe will also format the
+volume using the filesystem specified in `node['rs-storage']['device']['filesystem']` and mount the volume on the
+location specified in `node['rs-storage']['device']['mount_point']`.
 
 ## `rs-storage::stripe`
 
-Creates a new stripe of volumes from scratch or from an existing backup based on the value provided in
-`node['rs-storage']['restore']['lineage']` attribute. If this attribute is set, the volumes will be restored from a backup matching
-this lineage else a new stripe of volumes will be created from scratch. This recipe will create an LVM stripe on the
-volumes and formats the logical volume using the filesystem specified in `node['rs-storage']['device']['filesystem']`. This will
-also mount the volume on the location specified in `node['rs-storage']['device']['mount_point']`.
+Creates a new logical volume composed of volumes from scratch or from an existing backup based on the value provided in
+the `node['rs-storage']['restore']['lineage']` attribute. If this attribute is set, the volumes will be restored from a
+backup matching this lineage otherwise a new logical volume composed of volumes will be created from scratch. This
+recipe will create a striped logical volume using LVM on the volumes and format the logical volume using the filesystem
+specified in `node['rs-storage']['device']['filesystem']`. This will also mount the volume on the location specified in
+`node['rs-storage']['device']['mount_point']`.
 
 ## `rs-storage::backup`
 
-Takes a backup of all volumes attached to the server (except boot disks if there were any) with the lineage specified
-in the `node['rs-storage']['backup']['lineage']` attribute. During the backup process, the filesystem will be frozen. The filesystem
-will be unfrozen even if the backup process fails with the help of a chef exception handler. This recipe will also
-cleanup the volume snapshots based on the criteria specified in the `rs-storage/backup/keep/*` attributes.
+Takes a backup of all volumes attached to the server (except boot disks if there are any) with the lineage specified
+in the `node['rs-storage']['backup']['lineage']` attribute. During the backup process, the filesystem will be frozen.i
+The filesystem will be unfrozen even if the backup process fails with the help of a chef exception handler. This recipe
+will also clean up the volume snapshots based on the criteria specified in the `rs-storage/backup/keep/*` attributes.
 
 ## `rs-storage::schedule`
 
-Adds/removes the crontab entry for taking backups periodically at the minute and hour provided via
-`node['rs-storage']['schedule']['minute']` and `node['rs-storage']['schedule']['hour']` attributes.
+Adds or removes the crontab entry for taking backups periodically at the minute and hour provided via
+`node['rs-storage']['schedule']['minute']` and `node['rs-storage']['schedule']['hour']` attributes. The recipe uses the
+`node['rs-storage']['schedule']['enable']` attribute to determine wheter to add or remove the crontab entry.
 
 ## `rs-storage::decommission`
 
-This recipe detaches and deletes the volumes attached to the server if the `node['rs-storage']['device']['destroy_on_decommission']`
-attribute is set to true. This operation will be skipped if the server is entering the stop state or rebooting.
+If the `node['rs-storage']['device']['destroy_on_decommission']` attribute is set to true, this recipe detaches and
+deletes the volumes attached to the server. This operation will be skipped if the server is entering the stop state or
+rebooting.
 
 # Author
 
