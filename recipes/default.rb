@@ -22,5 +22,4 @@ marker "recipe_start_rightscale" do
 end
 
 include_recipe 'rightscale_volume::default'
-
 include_recipe 'rightscale_backup::default'

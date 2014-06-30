@@ -35,6 +35,7 @@ end
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
 
+# rs-storage/restore/lineage is empty, creating new volume
 if node['rs-storage']['restore']['lineage'].to_s.empty?
   log "Creating a new volume '#{nickname}' with size #{size}"
   rightscale_volume nickname do
@@ -50,6 +51,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
     mount node['rs-storage']['device']['mount_point']
     action [:create, :enable, :mount]
   end
+# rs-storage/restore/lineage is set, restore from the backup
 else
   lineage = node['rs-storage']['restore']['lineage']
   timestamp = node['rs-storage']['restore']['timestamp']

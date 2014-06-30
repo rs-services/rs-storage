@@ -1,3 +1,4 @@
 knife: bundle exec knife cookbook test $COOKBOOK
+# Ignore FC009 since it doesn't recognize lazy attributes
 foodcritic: bundle exec foodcritic --epic-fail any --tags ~FC009 $SANDBOX/$COOKBOOK
 chefspec: bundle exec rspec --format documentation --color
