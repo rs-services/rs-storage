@@ -69,7 +69,7 @@ else
   else
     # Unmount the volume
     log "Unmounting #{node['rs-storage']['device']['mount_point']}"
-    # Thre might still be some open files from the mount point. Just ignore the failure for now.
+    # There might still be some open files from the mount point. Just ignore the failure for now.
     mount node['rs-storage']['device']['mount_point'] do
       device lazy { node['rightscale_volume'][device_nickname]['device'] }
       ignore_failure true
