@@ -26,9 +26,11 @@ schedule_hour = node['rs-storage']['schedule']['hour']
 schedule_minute = node['rs-storage']['schedule']['minute']
 lineage = node['rs-storage']['backup']['lineage']
 
-# Both schedule hour and minute should be set
-unless schedule_hour && schedule_minute
-  raise 'rs-storage/schedule/hour and rs-storage/schedule/minute inputs should be set'
+if schedule_enable
+  # Both schedule hour and minute should be set
+  unless schedule_hour && schedule_minute
+    raise 'rs-storage/schedule/hour and rs-storage/schedule/minute inputs should be set'
+  end
 end
 
 # Adds or removes the crontab entry for backup schedule based on rs-storage/schedule/enable

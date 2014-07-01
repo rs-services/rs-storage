@@ -35,34 +35,34 @@ chef_handler 'Rightscale::BackupErrorHandler' do
   action :enable
 end
 
-nickname = node['rs-storage']['device']['nickname']
+device_nickname = node['rs-storage']['device']['nickname']
 
 log "Freezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
 
-filesystem "freeze #{nickname}" do
-  label nickname
+filesystem "freeze #{device_nickname}" do
+  label device_nickname
   mount node['rs-storage']['device']['mount_point']
   action :freeze
 end
 
 log "Taking a backup of lineage '#{node['rs-storage']['backup']['lineage']}'"
 
-rightscale_backup nickname do
+rightscale_backup device_nickname do
   lineage node['rs-storage']['backup']['lineage']
   action :create
 end
 
 log "Unfreezing the filesystem mounted on #{node['rs-storage']['device']['mount_point']}"
 
-filesystem "unfreeze #{nickname}" do
-  label nickname
+filesystem "unfreeze #{device_nickname}" do
+  label device_nickname
   mount node['rs-storage']['device']['mount_point']
   action :unfreeze
 end
 
 log 'Cleaning up old snapshots'
 
-rightscale_backup nickname do
+rightscale_backup device_nickname do
   lineage node['rs-storage']['backup']['lineage']
   keep_last node['rs-storage']['backup']['keep']['keep_last'].to_i
   dailies node['rs-storage']['backup']['keep']['dailies'].to_i

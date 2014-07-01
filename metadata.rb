@@ -7,15 +7,15 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '1.0.0'
 
 depends 'chef_handler', '~> 1.1.6'
-depends 'filesystem', '~> 0.8.3'
-depends 'lvm', '~> 1.0.8'
+depends 'filesystem', '~> 0.9.0'
+depends 'lvm', '~> 1.1.0'
 depends 'marker', '~> 1.0.0'
 depends 'rightscale_backup', '~> 1.1.1'
 depends 'rightscale_volume', '~> 1.1.0'
 
 recipe 'rs-storage::default', 'Sets up required dependencies for using this cookbook'
 recipe 'rs-storage::volume', 'Creates a volume and attaches it to the server'
-recipe 'rs-storage::stripe', 'Creates volumes, attaches them to the server, and sets up LVM stripe'
+recipe 'rs-storage::stripe', 'Creates volumes, attaches them to the server, and sets up a striped LVM'
 recipe 'rs-storage::backup', :description => 'Creates a backup', :thread => 'storage_backup'
 recipe 'rs-storage::decommission', 'Destroys LVM conditionally, detaches and destroys volumes. This recipe should' +
   ' be used as a decommission recipe in a RightScale ServerTemplate.'
@@ -23,8 +23,8 @@ recipe 'rs-storage::schedule', 'Enable/disable periodic backups based on rs-stor
 
 attribute 'rs-storage/device/count',
   :display_name => 'Device Count',
-  :description => 'The number of devices to create and add to the Logical Volume. If this value is set to more than 1,' +
-    ' it will create the specified number of devices and create an LVM on the devices.',
+  :description => 'The number of devices to create and use in the Logical Volume. If this value is set to more than' +
+    ' 1, it will create the specified number of devices and create an LVM on the devices.',
   :default => '2',
   :recipes => ['rs-storage::stripe', 'rs-storage::decommission'],
   :required => 'recommended'
@@ -66,7 +66,7 @@ attribute 'rs-storage/device/filesystem',
 
 attribute 'rs-storage/device/detach_timeout',
   :display_name => 'Detach Timeout',
-  :description => 'Amount of time (in seconds) to wait for a volume to detach at decommission. Example: 300',
+  :description => 'Amount of time (in seconds) to wait for a single volume to detach at decommission. Example: 300',
   :default => '300',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
