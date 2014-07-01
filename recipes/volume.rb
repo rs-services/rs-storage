@@ -22,7 +22,7 @@ marker "recipe_start_rightscale" do
 end
 
 detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i
-nickname = node['rs-storage']['device']['nickname']
+device_nickname = node['rs-storage']['device']['nickname']
 size = node['rs-storage']['device']['volume_size'].to_i
 
 execute "set decommission timeout to #{detach_timeout}" do
@@ -37,16 +37,16 @@ volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage
 
 # rs-storage/restore/lineage is empty, creating new volume
 if node['rs-storage']['restore']['lineage'].to_s.empty?
-  log "Creating a new volume '#{nickname}' with size #{size}"
-  rightscale_volume nickname do
+  log "Creating a new volume '#{device_nickname}' with size #{size}"
+  rightscale_volume device_nickname do
     size size
     options volume_options
     action [:create, :attach]
   end
 
-  filesystem nickname do
+  filesystem device_nickname do
     fstype node['rs-storage']['device']['filesystem']
-    device lazy { node['rightscale_volume'][nickname]['device'] }
+    device lazy { node['rightscale_volume'][device_nickname]['device'] }
     mkfs_options node['rs-storage']['device']['mkfs_options']
     mount node['rs-storage']['device']['mount_point']
     action [:create, :enable, :mount]
@@ -56,12 +56,12 @@ else
   lineage = node['rs-storage']['restore']['lineage']
   timestamp = node['rs-storage']['restore']['timestamp']
 
-  message = "Restoring volume '#{nickname}' from backup using lineage '#{lineage}'"
+  message = "Restoring volume '#{device_nickname}' from backup using lineage '#{lineage}'"
   message << " and using timestamp '#{timestamp}'" if timestamp
 
   log message
 
-  rightscale_backup nickname do
+  rightscale_backup device_nickname do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
     size size
@@ -75,7 +75,7 @@ else
 
   mount node['rs-storage']['device']['mount_point'] do
     fstype node['rs-storage']['device']['filesystem']
-    device lazy { node['rightscale_backup'][nickname]['devices'].first }
+    device lazy { node['rightscale_backup'][device_nickname]['devices'].first }
     action [:mount, :enable]
   end
 end
