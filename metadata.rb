@@ -57,6 +57,13 @@ attribute 'rs-storage/device/iops',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
+attribute 'rs-storage/device/volume_type',
+  :display_name => 'Volume Type',
+  :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
+    ' Example: NFS Datastore',
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :required => 'optional'
+
 attribute 'rs-storage/device/filesystem',
   :display_name => 'Device Filesystem',
   :description => 'The filesystem to be used on the device. Example: ext4',
