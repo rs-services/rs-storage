@@ -60,7 +60,7 @@ attribute 'rs-storage/device/iops',
 attribute 'rs-storage/device/volume_type',
   :display_name => 'Volume Type',
   :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
-    ' Example: NFS Datastore',
+    ' Example: Platinum-Volume-Type',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
