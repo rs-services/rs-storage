@@ -45,6 +45,7 @@ device_nicknames = []
 # Cloud-specific volume options
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
+volume_options[:volume_type] = node['rs-storage']['device']['volume_type'] if node['rs-storage']['device']['volume_type']
 
 # Install packages required for setting up LVM
 include_recipe 'lvm::default'

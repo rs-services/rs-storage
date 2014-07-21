@@ -34,6 +34,7 @@ end
 # Cloud-specific volume options
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
+volume_options[:volume_type] = node['rs-storage']['device']['volume_type'] if node['rs-storage']['device']['volume_type']
 
 # rs-storage/restore/lineage is empty, creating new volume
 if node['rs-storage']['restore']['lineage'].to_s.empty?

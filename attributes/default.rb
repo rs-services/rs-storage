@@ -41,6 +41,9 @@ default['rs-storage']['device']['count'] = 2
 # I/O Operations Per Second value
 default['rs-storage']['device']['iops'] = nil
 
+# Volume type
+default['rs-storage']['device']['volume_type'] = nil
+
 # The filesystem to be used on the device
 default['rs-storage']['device']['filesystem'] = 'ext4'
 

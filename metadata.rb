@@ -10,8 +10,8 @@ depends 'chef_handler', '~> 1.1.6'
 depends 'filesystem', '~> 0.9.0'
 depends 'lvm', '~> 1.1.0'
 depends 'marker', '~> 1.0.0'
-depends 'rightscale_backup', '~> 1.1.1'
-depends 'rightscale_volume', '~> 1.1.0'
+depends 'rightscale_backup', '~> 1.1.2'
+depends 'rightscale_volume', '~> 1.2.0'
 
 recipe 'rs-storage::default', 'Sets up required dependencies for using this cookbook'
 recipe 'rs-storage::volume', 'Creates a volume and attaches it to the server'
@@ -54,6 +54,13 @@ attribute 'rs-storage/device/iops',
   :display_name => 'Device IOPS',
   :description => 'IO Operations Per Second to use for the device. Currently this value is only used on AWS clouds.' +
     ' Example: 100',
+  :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
+  :required => 'optional'
+
+attribute 'rs-storage/device/volume_type',
+  :display_name => 'Volume Type',
+  :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
+    ' Example: Platinum-Volume-Type',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
