@@ -44,6 +44,9 @@ default['rs-storage']['device']['iops'] = nil
 # Volume type
 default['rs-storage']['device']['volume_type'] = nil
 
+# Controller type
+default['rs-storage']['device']['controller_type'] = nil
+
 # The filesystem to be used on the device
 default['rs-storage']['device']['filesystem'] = 'ext4'
 
