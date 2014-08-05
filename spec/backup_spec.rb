@@ -3,6 +3,7 @@ require_relative 'spec_helper'
 describe 'rs-storage::backup' do
   let(:chef_run) do
     ChefSpec::Runner.new do |node|
+      node.set['chef_handler']['handler_path'] = '/var/chef/handlers'
       node.set['rs-storage']['backup']['lineage'] = 'testing'
     end.converge(described_recipe)
   end
