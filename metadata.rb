@@ -59,8 +59,7 @@ attribute 'rs-storage/device/iops',
 
 attribute 'rs-storage/device/volume_type',
   :display_name => 'Volume Type',
-  :description => 'Volume Type to use for creating volumes. Currently this value is only used on vSphere.' +
-    ' Example: Platinum-Volume-Type',
+  :description => 'Volume Type to use for creating volumes. Example: gp2',
   :recipes => ['rs-storage::volume', 'rs-storage::stripe'],
   :required => 'optional'
 
