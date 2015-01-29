@@ -49,6 +49,7 @@ log "Taking a backup of lineage '#{node['rs-storage']['backup']['lineage']}'"
 
 rightscale_backup device_nickname do
   lineage node['rs-storage']['backup']['lineage']
+  timeout node['rs-storage']['backup']['timeout']
   action :create
 end
 

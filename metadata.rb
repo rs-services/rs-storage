@@ -158,3 +158,24 @@ attribute 'rs-storage/schedule/minute',
   :description => 'The minute to schedule the backup on. This value should abide by crontab syntax. Example: 30',
   :recipes => ['rs-storage::schedule'],
   :required => 'required'
+
+attribute 'rs-storage/backup/timeout',
+  :display_name => 'Backup Timeout',
+  :description => 'The time rs-storage::backup will wait to backup. Example: 15',
+  :recipes => [ 'rs-storage::backup' ],
+  :required => 'optional',
+  :default => '15'
+
+attribute 'rs-storage/restore/timeout',
+  :display_name => 'Restore Timeout',
+  :description => 'The time rs-storage::restore will wait to restore. Example: 15',
+  :recipes => [ 'rs-storage::volume' ],
+  :required => 'optional',
+  :default => '15'
+
+attribute 'rs-storage/volume/timeout',
+  :display_name => 'Volume Create Timeout',
+  :description => 'The time rs-storage::volume will wait to volume. Example: 15',
+  :recipes => [ 'rs-storage::volume' ],
+  :required => 'optional',
+  :default => '15'
