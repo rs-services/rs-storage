@@ -30,6 +30,8 @@ execute "set decommission timeout to #{detach_timeout}" do
   not_if "[ `rs_config --get decommission_timeout` -eq #{detach_timeout} ]"
 end
 
+# Determine how many volumes to attach based on mount points provided
+mount_points = node['rs-storage']['device']['mount_point'].split(/\s*,\s*/)
 
 # Cloud-specific volume options
 volume_options = {}
@@ -37,22 +39,24 @@ volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage
 volume_options[:volume_type] = node['rs-storage']['device']['volume_type'] if node['rs-storage']['device']['volume_type']
 volume_options[:controller_type] = node['rs-storage']['device']['controller_type'] if node['rs-storage']['device']['controller_type']
 
-# rs-storage/restore/lineage is empty, creating new volume
+# rs-storage/restore/lineage is empty, creating new volume(s)
 if node['rs-storage']['restore']['lineage'].to_s.empty?
-  log "Creating a new volume '#{device_nickname}' with size #{size}"
-  rightscale_volume device_nickname do
-    size size
-    options volume_options
-    timeout node['rs-storage']['volume']['timeout'].to_i
-    action [:create, :attach]
-  end
+  log "Creating new volumes '#{device_nickname}' each with size #{size}"
+  mount_points.to_enum.with_index(1) do |mount_point, device_num|
+    rightscale_volume "#{device_nickname}_#{device_num}" do
+      size size
+      options volume_options
+      timeout node['rs-storage']['volume']['timeout'].to_i
+      action [:create, :attach]
+    end
 
-  filesystem device_nickname do
-    fstype node['rs-storage']['device']['filesystem']
-    device lazy { node['rightscale_volume'][device_nickname]['device'] }
-    mkfs_options node['rs-storage']['device']['mkfs_options']
-    mount node['rs-storage']['device']['mount_point']
-    action [:create, :enable, :mount]
+    filesystem "#{device_nickname}_#{device_num}" do
+      fstype node['rs-storage']['device']['filesystem']
+      device lazy { node['rightscale_volume'][device_nickname]['device'] }
+      mkfs_options node['rs-storage']['device']['mkfs_options']
+      mount mount_point
+      action [:create, :enable, :mount]
+    end
   end
 # rs-storage/restore/lineage is set, restore from the backup
 else
