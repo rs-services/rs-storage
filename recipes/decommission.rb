@@ -33,19 +33,23 @@ elsif ['shutting-down:reboot', 'shutting-down:stop', 'shutting-down:unknown'].in
 else
   device_nickname = node['rs-storage']['device']['nickname']
 
-  # Unmount the volume
-  log "Unmounting #{node['rs-storage']['device']['mount_point']}"
-  # There might still be some open files from the mount point. Just ignore the failure for now.
-  mount node['rs-storage']['device']['mount_point'] do
-    device lazy { node['rightscale_volume'][device_nickname]['device'] }
-    ignore_failure true
-    action [:umount, :disable]
-    only_if { node.attribute?('rightscale_volume') && node['rightscale_volume'].attribute?(device_nickname) }
-  end
+  # Determine how many volumes to detached based on mount points provided
+  mount_points = node['rs-storage']['device']['mount_point'].split(/\s*,\s*/)
 
-  # Detach and delete the volume
-  log 'LVM was not used on the device, simply detaching the deleting the device.'
-  rightscale_volume device_nickname do
-    action [:detach, :delete]
+  mount_points.to_enum.with_index(1) do |mount_point, device_num|
+    # Unmount the volumes
+    log "Unmounting #{mount_point}"
+    # There might still be some open files from the mount point. Just ignore the failure for now.
+    mount mount_point do
+      device lazy { node['rightscale_volume']["#{device_nickname}_#{device_num}"]['device'] }
+      ignore_failure true
+      action [:umount, :disable]
+      only_if { node.attribute?('rightscale_volume') && node['rightscale_volume'].attribute?(device_nickname) }
+    end
+
+    # Detach and delete the volume
+    rightscale_volume "#{device_nickname}_#{device_num}" do
+      action [:detach, :delete]
+    end
   end
 end
