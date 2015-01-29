@@ -77,14 +77,14 @@ else
     action :restore
   end
 
-  mount_points.to_enum.with_index(1) do |mount_point, device_num|
+  mount_points.to_enum.with_index(0) do |mount_point, device_num|
     directory mount_point do
       recursive true
     end
 
     mount mount_point do
       fstype node['rs-storage']['device']['filesystem']
-      device lazy { node['rightscale_backup']["#{device_nickname}_#{device_num}"]['devices'].first }
+      device lazy { node['rightscale_backup'][device_nickname]['devices'][device_num] }
       action [:mount, :enable]
     end
   end
