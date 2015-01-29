@@ -43,7 +43,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
   rightscale_volume device_nickname do
     size size
     options volume_options
-    timeout node['rs-storage']['volume']['timeout']
+    timeout node['rs-storage']['volume']['timeout'].to_i
     action [:create, :attach]
   end
 
@@ -69,7 +69,7 @@ else
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
     size size
     options volume_options
-    timeout node['rs-storage']['restore']['timeout']
+    timeout node['rs-storage']['restore']['timeout'].to_i
     action :restore
   end
 

@@ -164,21 +164,18 @@ attribute 'rs-storage/backup/timeout',
   :description => 'The time rs-storage::backup will wait to backup. Example: 15',
   :recipes => [ 'rs-storage::backup' ],
   :required => 'optional',
-  :type => 'integer',
-  :default => 15
+  :default => '15'
 
 attribute 'rs-storage/restore/timeout',
   :display_name => 'Restore Timeout',
   :description => 'The time rs-storage::restore will wait to restore. Example: 15',
   :recipes => [ 'rs-storage::volume' ],
   :required => 'optional',
-  :type => 'integer',
-  :default => 15
+  :default => '15'
 
 attribute 'rs-storage/volume/timeout',
   :display_name => 'Volume Create Timeout',
   :description => 'The time rs-storage::volume will wait to volume. Example: 15',
   :recipes => [ 'rs-storage::volume' ],
   :required => 'optional',
-  :type => 'integer',
-  :default => 15
+  :default => '15'
