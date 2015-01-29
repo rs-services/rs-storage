@@ -82,7 +82,7 @@ else
       recursive true
     end
 
-    mount node['rs-storage']['device']['mount_point'] do
+    mount mount_point do
       fstype node['rs-storage']['device']['filesystem']
       device lazy { node['rightscale_backup']["#{device_nickname}_#{device_num}"]['devices'].first }
       action [:mount, :enable]
