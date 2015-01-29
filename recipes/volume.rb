@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-storage
 # Recipe:: volume
 #
-# Copyright (C) 2014 RightScale, Inc.
+# Copyright (C) 2015 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
 
     filesystem "#{device_nickname}_#{device_num}" do
       fstype node['rs-storage']['device']['filesystem']
-      device lazy { node['rightscale_volume'][device_nickname]['device'] }
+      device lazy { node['rightscale_volume']["#{device_nickname}_#{device_num}"]['device'] }
       mkfs_options node['rs-storage']['device']['mkfs_options']
       mount mount_point
       action [:create, :enable, :mount]
