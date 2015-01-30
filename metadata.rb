@@ -22,7 +22,9 @@ recipe 'rs-storage::schedule', 'Enable/disable periodic backups based on rs-stor
 
 attribute 'rs-storage/device/mount_point',
   :display_name => 'Device Mount Points',
-  :description => 'Mount point(s) to mount the device(s) on. Comma separated list will attach that number of volumes. Example: /mnt/storage',
+  :description => 'Mount point(s) to mount the device(s) on. Comma separated list will attach that number of volumes.' +
+    ' Size of each volume can be assigned with a colon after each mount point otherwise Default Device Volume size is used.' +
+    ' Example: /mnt/storage1:10, /mnt/storage2:20, /mnt/storage3:30',
   :default => '/mnt/storage',
   :recipes => ['rs-storage::volume', 'rs-storage::decommission'],
   :required => 'recommended'
@@ -35,8 +37,8 @@ attribute 'rs-storage/device/nickname',
   :required => 'recommended'
 
 attribute 'rs-storage/device/volume_size',
-  :display_name => 'Device Volume Size',
-  :description => 'Size of the volume or logical volume to create (in GB). Example: 10',
+  :display_name => 'Default Device Volume Size',
+  :description => 'Default Size of the volume to create (in GB). Size can also be assigned at Device Mount Points. Example: 10',
   :default => '10',
   :recipes => ['rs-storage::volume'],
   :required => 'recommended'
