@@ -45,7 +45,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
   mount_points.to_enum.with_index(1) do |mount_point, device_num|
     log "Creating new volumes '#{device_nickname}' each with size #{volume_sizes[(device_num-1)]}"
     rightscale_volume "#{device_nickname}_#{device_num}" do
-      size volume_sizes[(device_num-1)]
+      size volume_sizes[(device_num-1)].to_i
       options volume_options
       timeout node['rs-storage']['volume']['timeout'].to_i
       action [:create, :attach]
