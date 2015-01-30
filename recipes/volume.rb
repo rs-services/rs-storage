@@ -77,7 +77,7 @@ else
     action :restore
   end
 
-  mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
+  mount_points.map{|item| item.split(':')}.to_enum.with_index do |(mount_point, size), device_num|
     directory mount_point do
       recursive true
     end
