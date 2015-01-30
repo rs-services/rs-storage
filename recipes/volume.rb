@@ -72,7 +72,6 @@ else
   rightscale_backup device_nickname do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
-    size size
     options volume_options
     timeout node['rs-storage']['restore']['timeout'].to_i
     action :restore
