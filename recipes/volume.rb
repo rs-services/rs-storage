@@ -23,7 +23,7 @@ end
 
 detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i
 device_nickname = node['rs-storage']['device']['nickname']
-size = node['rs-storage']['device']['volume_size'].to_i
+#size = node['rs-storage']['device']['volume_size'].to_i
 
 execute "set decommission timeout to #{detach_timeout}" do
   command "rs_config --set decommission_timeout #{detach_timeout}"
@@ -32,7 +32,8 @@ end
 
 # Determine how many volumes to attach based on mount points provided
 mount_points = node['rs-storage']['device']['mount_point'].split(/\s*,\s*/)
-
+volume_sizes = node['rs-storage']['device']['volume_size'].split(/\s*,\s*/)
+raise "Mount points, and sizes need to be equal" unless (mount_points.length == volume_sizes.length)
 # Cloud-specific volume options
 volume_options = {}
 volume_options[:iops] = node['rs-storage']['device']['iops'] if node['rs-storage']['device']['iops']
@@ -44,7 +45,7 @@ if node['rs-storage']['restore']['lineage'].to_s.empty?
   log "Creating new volumes '#{device_nickname}' each with size #{size}"
   mount_points.to_enum.with_index(1) do |mount_point, device_num|
     rightscale_volume "#{device_nickname}_#{device_num}" do
-      size size
+      size volume_sizes[(device_num-1)]
       options volume_options
       timeout node['rs-storage']['volume']['timeout'].to_i
       action [:create, :attach]
