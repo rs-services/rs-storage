@@ -42,9 +42,10 @@ volume_options[:controller_type] = node['rs-storage']['device']['controller_type
 # rs-storage/restore/lineage is empty, creating new volume(s)
 if node['rs-storage']['restore']['lineage'].to_s.empty?
   mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
-    log "Creating new volumes '#{device_nickname}_#{device_num}' with size #{size || default_size}"
+    size = size ? size.to_i : default_size
+    log "Creating new volumes '#{device_nickname}_#{device_num}' with size #{size}"
     rightscale_volume "#{device_nickname}_#{device_num}" do
-      size (size || default_size).to_i
+      size size
       options volume_options
       timeout node['rs-storage']['volume']['timeout'].to_i
       action [:create, :attach]
