@@ -36,7 +36,7 @@ else
   # Determine how many volumes to detached based on mount points provided
   mount_points = node['rs-storage']['device']['mount_point'].split(/\s*,\s*/)
 
-  mount_points.to_enum.with_index(1) do |mount_point, device_num|
+  mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
     # Unmount the volumes
     log "Unmounting #{mount_point}"
     # There might still be some open files from the mount point. Just ignore the failure for now.

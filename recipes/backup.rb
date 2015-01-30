@@ -40,7 +40,7 @@ device_nickname = node['rs-storage']['device']['nickname']
 # Determine how many volumes to freeze based on mount points provided
 mount_points = node['rs-storage']['device']['mount_point'].split(/\s*,\s*/)
 
-mount_points.to_enum.with_index(1) do |mount_point, device_num|
+mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
   log "Freezing the filesystem mounted on #{mount_point}"
   filesystem "freeze #{device_nickname}_#{device_num}" do
     label "#{device_nickname}_#{device_num}"
@@ -57,7 +57,7 @@ rightscale_backup device_nickname do
   action :create
 end
 
-mount_points.to_enum.with_index(1) do |mount_point, device_num|
+mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
   log "Unfreezing the filesystem mounted on #{mount_point}"
   filesystem "unfreeze #{device_nickname}_#{device_num}" do
     label "#{device_nickname}_#{device_num}"

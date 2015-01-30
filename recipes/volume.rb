@@ -23,7 +23,7 @@ end
 
 detach_timeout = node['rs-storage']['device']['detach_timeout'].to_i
 device_nickname = node['rs-storage']['device']['nickname']
-size = node['rs-storage']['device']['volume_size'].to_i
+default_size = node['rs-storage']['device']['volume_size'].to_i
 
 execute "set decommission timeout to #{detach_timeout}" do
   command "rs_config --set decommission_timeout #{detach_timeout}"
@@ -41,10 +41,10 @@ volume_options[:controller_type] = node['rs-storage']['device']['controller_type
 
 # rs-storage/restore/lineage is empty, creating new volume(s)
 if node['rs-storage']['restore']['lineage'].to_s.empty?
-  log "Creating new volumes '#{device_nickname}' each with size #{size}"
-  mount_points.to_enum.with_index(1) do |mount_point, device_num|
+  mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
+    log "Creating new volumes '#{device_nickname}_#{device_num}' with size #{size || default_size}"
     rightscale_volume "#{device_nickname}_#{device_num}" do
-      size size
+      size size || default_size
       options volume_options
       timeout node['rs-storage']['volume']['timeout'].to_i
       action [:create, :attach]
@@ -71,13 +71,12 @@ else
   rightscale_backup device_nickname do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
-    size size
     options volume_options
     timeout node['rs-storage']['restore']['timeout'].to_i
     action :restore
   end
 
-  mount_points.to_enum.with_index(0) do |mount_point, device_num|
+  mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
     directory mount_point do
       recursive true
     end
