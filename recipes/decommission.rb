@@ -52,6 +52,8 @@ else
     if node['rs-storage']['device']['destroy_on_decommission'] != true &&
       node['rs-storage']['device']['destroy_on_decommission'] != 'true'
       log "will skip deletion of volumes."
+      # Delete device hash from the node variable.
+      node.set['rightscale_volume']["#{device_nickname}_#{device_num}"] = nil
     else
       log "will attemtp to delete volumes."
       rightscale_volume "#{device_nickname}_#{device_num}" do
