@@ -68,7 +68,7 @@ else
   message << " and using timestamp '#{timestamp}'" if timestamp
 
   log message
-
+  device_num=1
   rightscale_backup "#{device_nickname}_#{device_num}" do
     lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
