@@ -68,7 +68,9 @@ else
   message << " and using timestamp '#{timestamp}'" if timestamp
 
   log message
-  device_num=1
+mount_points.map{|item| item.split(':')}.to_enum.with_index do |(mount_point, size), device_num|
+  log mount_point
+  log device_num
   rightscale_backup "#{device_nickname}_#{device_num}" do
    lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
@@ -78,7 +80,6 @@ else
     action :reattach
   end
 
-  mount_points.map{|item| item.split(':')}.to_enum.with_index do |(mount_point, size), device_num|
     directory mount_point do
       recursive true
     end
