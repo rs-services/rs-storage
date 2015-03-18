@@ -68,7 +68,7 @@ else
   message << " and using timestamp '#{timestamp}'" if timestamp
 
   log message
-mount_points.map{|item| item.split(':')}.to_enum.with_index do |(mount_point, size), device_num|
+mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
   log mount_point
   log device_num
   rightscale_backup "#{device_nickname}_#{device_num}" do
