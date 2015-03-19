@@ -71,6 +71,8 @@ else
 mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point, size), device_num|
   log mount_point
   log device_num
+  volume_options[:device_num]=device_num
+
   rightscale_backup "#{device_nickname}_#{device_num}" do
    lineage node['rs-storage']['restore']['lineage']
     timestamp node['rs-storage']['restore']['timestamp'].to_i if node['rs-storage']['restore']['timestamp']
