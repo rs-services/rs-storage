@@ -86,11 +86,11 @@ mount_points.map{|item| item.split(':')}.to_enum.with_index(1) do |(mount_point,
       recursive true
     end
 
-    log "#{lazy node['rightscale_backup']}"
+    log "#{node['rightscale_backup']}"
 
     mount mount_point do
       fstype node['rs-storage']['device']['filesystem']
-      device lazy { node['rightscale_backup']["#{device_nickname}_#{device_num}"]['devices'][device_num] }
+      device lazy { node['rightscale_backup'][device_nickname]['devices'][device_num] }
       action [:mount, :enable]
     end
   end
